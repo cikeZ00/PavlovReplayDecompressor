@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Unreal.Core.Models.Enums;
+using System.Text.Json;
 
 // Set up dependency injection and logging services
 var serviceCollection = new ServiceCollection()
@@ -34,6 +35,17 @@ foreach (var replayFile in replayFiles)
     try
     {
         var replay = reader.ReadReplay(replayFile);
+        var gameData = replay.GameData;
+        Console.WriteLine($"GameSessionId: {gameData.GameSessionId}");
+
+        // Serialize the replay object to JSON
+        var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions { WriteIndented = true });
+
+        // Define the output JSON file path
+        var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
+
+        // Write the JSON string to a file
+        File.WriteAllText(jsonFilePath, json);
     }
     catch (Exception ex)
     {
