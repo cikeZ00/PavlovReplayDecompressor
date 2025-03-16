@@ -1,4 +1,4 @@
-﻿using FortniteReplayReader;
+﻿using PavlovReplayReader;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,7 +16,7 @@ var logger = provider.GetService<ILogger<Program>>();
 
 // Define the folder containing replay files
 //var replayFilesFolder = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), @"FortniteGame\Saved\Demos");
-var replayFilesFolder = @"C:\Users\ferro\Downloads\";
+var replayFilesFolder = @"C:\Users\cikeZ00\Downloads\";
 var replayFiles = Directory.EnumerateFiles(replayFilesFolder, "*.replay");
 
 var sw = new Stopwatch();

@@ -1,6 +1,6 @@
 # FortniteReplayDecompressor
 
-![FortniteReplayReader Nuget](https://img.shields.io/nuget/v/FortniteReplayReader?color=brightgreen)
+![PavlovReplayReader Nuget](https://img.shields.io/nuget/v/PavlovReplayReader?color=brightgreen)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/p5CMqJC)
 ![Build](https://github.com/Shiqan/FortniteReplayDecompressor/workflows/Build/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/fortnitereplaydecompressor/badge/?version=latest)](https://fortnitereplaydecompressor.readthedocs.io/en/latest/?badge=latest)
@@ -12,7 +12,7 @@ C# parser for your Fortnite replays.
 .NET 8.0 or .NET 9.0 is required.
 
 ```powershell
-dotnet add package FortniteReplayReader
+dotnet add package PavlovReplayReader
 ```
 
 ```csharp
