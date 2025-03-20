@@ -4,6 +4,7 @@ using Unreal.Core.Models;
 
 namespace PavlovReplayReader.Models;
 
+// TODO: Remove unused properties
 public class PlayerData
 {
     public PlayerData(PavlovPlayerState playerState)

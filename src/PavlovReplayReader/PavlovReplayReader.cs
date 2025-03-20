@@ -82,9 +82,9 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
     {
         switch (update.Export)
         {
-            case ActiveGameplayModifier modifier:
-                Builder.UpdateGameplayModifiers(modifier);
-                break;
+            //case ActiveGameplayModifier modifier:
+            //    Builder.UpdateGameplayModifiers(modifier);
+            //    break;
             //case FortPickup pickup:
             //Builder.CreatePickupEvent(channelIndex, pickup);
             //break;
@@ -102,20 +102,30 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
         switch (exportGroup)
         {
             case GameState state:
+                // DEBUG: GameState print
+                //foreach (var property in state.GetType().GetProperties())
+                //{
+                //    var value = property.GetValue(state);
+                //    if (value != null)
+                //    {
+                //        Console.WriteLine("{0}: {1}", property.Name, value);
+                //    }
+                //}
                 Builder.UpdateGameState(state);
                 break;
-            case PlaylistInfo playlist:
-                Builder.UpdatePlaylistInfo(playlist);
-                break;
+            //case PlaylistInfo playlist:
+            //    Builder.UpdatePlaylistInfo(playlist);
+            //    break;
             case PavlovPlayerState state:
-                foreach (var property in state.GetType().GetProperties())
-                {
-                    var value = property.GetValue(state);
-                    if (value != null)
-                    {
-                        Console.WriteLine("{0}: {1}", property.Name, value);
-                    }
-                }
+                // DEBUG: PlayerState print
+                //foreach (var property in state.GetType().GetProperties())
+                //{
+                //    var value = property.GetValue(state);
+                //    if (value != null)
+                //    {
+                //        Console.WriteLine("{0}: {1}", property.Name, value);
+                //    }
+                //}
 
                 Builder.UpdatePlayerState(channelIndex, state);
                 break;

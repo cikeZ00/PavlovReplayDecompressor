@@ -106,42 +106,29 @@ public class PavlovReplayBuilder
 
     public void UpdateGameState(GameState state)
     {
-        GameData.GameSessionId ??= state?.GameSessionId;
-        GameData.UtcTimeStartedMatch ??= state.UtcTimeStartedMatch?.Time;
-        GameData.MatchEndTime ??= state.EndGameStartTime;
-        GameData.MapInfo ??= state.MapInfo?.Name;
-
-        GameData.IsLargeTeamGame ??= state.bIsLargeTeamGame;
-        GameData.TournamentRound ??= state.EventTournamentRound;
-
-        GameData.AdditionalPlaylistLevels ??= state.AdditionalPlaylistLevelsStreamed?.Select(i => i.Name);
-
-        GameData.MaxPlayers ??= state.TeamCount;
-        GameData.TeamSize ??= state.TeamSize;
-        GameData.TeamSize ??= state.ActiveTeamNums?.Length;
-        GameData.TotalBots = state.PlayerBotsLeft > GameData.TotalBots ? state.PlayerBotsLeft : GameData.TotalBots;
-
-        GameData.TotalPlayerStructures ??= state.TotalPlayerStructures;
-
-        GameData.AircraftStartTime ??= state.AircraftStartTime;
-        GameData.SafeZonesStartTime ??= state.SafeZonesStartTime;
-
-        MapData.BattleBusFlightPaths ??= state.TeamFlightPaths?.Select(i => new BattleBus(i) { Skin = state.DefaultBattleBus?.Name });
-
-        if (state.ReplicatedWorldTimeSeconds != null)
-        {
-            ReplicatedWorldTimeSeconds = state.ReplicatedWorldTimeSeconds;
-        }
-
-        if (state.ReplicatedWorldTimeSecondsDouble != null)
-        {
-            ReplicatedWorldTimeSecondsDouble = state.ReplicatedWorldTimeSecondsDouble;
-        }
-
-        GameData.WinningPlayerIds ??= state.WinningPlayerList;
-        GameData.WinningTeam ??= state.WinningTeam;
-        GameData.RecorderId ??= state.RecorderPlayerState?.Value;
+        GameData.ReplicatedWorldTimeSeconds ??= state.ReplicatedWorldTimeSeconds;
+        GameData.MatchState ??= state.MatchState?.Name;
+        GameData.ElapsedTime ??= state.ElapsedTime;
+        GameData.Team0Score ??= state.Team0Score;
+        GameData.Team1Score ??= state.Team1Score;
+        GameData.RoundTime ??= state.RoundTime;
+        GameData.AttackingTeam ??= state.AttackingTeam;
+        GameData.NameTagClass ??= state.NameTagClass?.ToString();
+        GameData.bEnableProne ??= state.bEnableProne;
+        GameData.bCanReviveEnemies ??= state.bCanReviveEnemies;
+        GameData.GameModeType ??= state.GameModeType;
+        GameData.AFKTimeLimit ??= state.AFKTimeLimit;
+        GameData.BalancingCSV ??= state.BalancingCSV;
+        GameData.SpawnableEquipment ??= state.SpawnableEquipment?.Select(i => i.Name);
+        GameData.MaxPlayers ??= state.MaxPlayers;
+        GameData.ModInitializers ??= state.ModInitializers?.Select(i => i.Name);
+        GameData.ModId ??= state.ModId;
+        GameData.ModPath ??= state.ModPath;
+        GameData.GlobalInfo ??= state.GlobalInfo;
     }
+
+
+
 
     public void UpdatePrivateName(uint channelIndex, PlayerNameData playerNameData)
     {
@@ -151,9 +138,9 @@ public class PavlovReplayBuilder
         }
     }
 
-    public void UpdatePlaylistInfo(PlaylistInfo playlist) => GameData.CurrentPlaylist ??= playlist.Name;
+    //public void UpdatePlaylistInfo(PlaylistInfo playlist) => GameData.CurrentPlaylist ??= playlist.Name;
 
-    public void UpdateGameplayModifiers(ActiveGameplayModifier modifier) => GameData.ActiveGameplayModifiers.Add(modifier.ModifierDef?.Name);
+    //public void UpdateGameplayModifiers(ActiveGameplayModifier modifier) => GameData.ActiveGameplayModifiers.Add(modifier.ModifierDef?.Name);
 
     public void UpdateTeamData()
     {
