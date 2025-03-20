@@ -5,22 +5,16 @@ namespace PavlovReplayReader.Models;
 
 public class KillFeedEntry
 {
-    public int? PlayerId { get; set; }
-    public string? PlayerName { get; set; }
-    public bool PlayerIsBot { get; set; }
-
-    public int? FinisherOrDowner { get; set; }
-    public string? FinisherOrDownerName { get; set; }
-    public bool FinisherOrDownerIsBot { get; set; }
-
-    public float? ReplicatedWorldTimeSeconds { get; set; }
-    public double? ReplicatedWorldTimeSecondsDouble { get; set; }
-    public float? Distance { get; set; }
-    public int? DeathCause { get; set; }
-    public FVector DeathLocation { get; set; }
-    public int? DeathCircumstance { get; set; }
-    public IEnumerable<string> DeathTags { get; set; }
-
-    public bool IsDowned { get; set; }
-    public bool IsRevived { get; set; }
+    public int? Killer { get; set; }
+    public int? Victim { get; set; }
+    public int? DamageCauser { get; set; }
+    public bool bHeadshot { get; set; }
+    public string? KillerName { get; set; }
+    public int? KillerTeamId { get; set; }
+    public int? KillerId { get; set; }
+    public string? VictimName { get; set; }
+    public int? VictimTeamId { get; set; }
+    public int? VictimId { get; set; }
+    public float? EntryLifespan { get; set; }
+    public bool bLocalPlayer { get; set; }
 }

@@ -51,7 +51,7 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
         get => _branch;
         set
         {
-            var regex = new Regex(@"\+\+Fortnite\+Release\-(?<major>\d+)\.(?<minor>\d*)");
+            var regex = new Regex(@"(?<branch>\d+\.\d+)-CL-(?<major>\d+)", RegexOptions.Compiled);
             var result = regex.Match(value);
             if (result.Success)
             {
@@ -107,7 +107,16 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
             case PlaylistInfo playlist:
                 Builder.UpdatePlaylistInfo(playlist);
                 break;
-            case FortPlayerState state:
+            case PavlovPlayerState state:
+                foreach (var property in state.GetType().GetProperties())
+                {
+                    var value = property.GetValue(state);
+                    if (value != null)
+                    {
+                        Console.WriteLine("{0}: {1}", property.Name, value);
+                    }
+                }
+
                 Builder.UpdatePlayerState(channelIndex, state);
                 break;
             case PlayerPawn pawn:
@@ -253,6 +262,7 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
             };
 
             var version = archive.ReadInt32();
+            Console.WriteLine("Version: " + version);
 
             if (version >= 3)
             {

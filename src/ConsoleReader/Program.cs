@@ -11,7 +11,7 @@ using System.Text.Json;
 var serviceCollection = new ServiceCollection()
     .AddLogging(loggingBuilder => loggingBuilder
         .AddConsole()
-        .SetMinimumLevel(LogLevel.Warning));
+        .SetMinimumLevel(LogLevel.Error));
 var provider = serviceCollection.BuildServiceProvider();
 var logger = provider.GetService<ILogger<Program>>();
 

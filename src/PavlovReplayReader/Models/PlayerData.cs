@@ -6,65 +6,45 @@ namespace PavlovReplayReader.Models;
 
 public class PlayerData
 {
-    public PlayerData(FortPlayerState playerState)
+    public PlayerData(PavlovPlayerState playerState)
     {
-        Id = playerState.PlayerId is null ? playerState.PlayerID : (int?) playerState.PlayerId;
-        EpicId = playerState.UniqueId ?? playerState.UniqueID;
-        BotId = playerState.BotUniqueId;
-        IsBot = playerState.bIsABot == true;
-        PlayerNameCustomOverride = playerState.PlayerNameCustomOverride?.Text;
-        IsGameSessionOwner = playerState.bIsGameSessionOwner;
-        PlayerNumber = playerState.WorldPlayerId is not null ? (int?) playerState.WorldPlayerId : null;
-        StreamerModeName = playerState.StreamerModeName?.Text;
-        IsPartyLeader = playerState.PartyOwnerUniqueId == playerState.UniqueId || playerState.PartyOwnerUniqueId == playerState.UniqueID;
-        TeamIndex = playerState.TeamIndex;
-        Level = playerState.Level;
-        SeasonLevelUIDisplay = playerState.SeasonLevelUIDisplay;
-        PlatformUniqueNetId = playerState.PlatformUniqueNetId;
-        Platform = playerState.Platform;
-        HasFinishedLoading = playerState.bHasFinishedLoading;
-        HasStartedPlaying = playerState.bHasStartedPlaying;
-        IsUsingAnonymousMode = playerState.bUsingAnonymousMode;
-        IsUsingStreamerMode = playerState.bUsingStreamerMode;
-
-        Cosmetics = new Cosmetics()
-        {
-            CharacterBodyType = playerState.CharacterBodyType,
-            HeroType = playerState.HeroType?.Name,
-            CharacterGender = playerState.CharacterGender
-        };
+        Id = playerState.PlayerId;
+        PlayerId = playerState.UniqueID;
+        PlayerName = playerState.PlayerNamePrivate;
+        TeamIndex = playerState.TeamId;
+        Kills = (uint?)playerState.Kills;
+        Deaths = (uint?)playerState.Deaths;
+        Assists = (uint?)playerState.Assists;
+        Cash = (uint?)playerState.Cash;
+        PlatformId = playerState.PlatformId;
+        bDead = playerState.bDead;
+        PlayerHeight = playerState.PlayerHeight;
+        bRightHanded = playerState.bRightHanded;
+        bVirtualStock = playerState.bVirtualStock;
+        bSpeaking = playerState.bSpeaking;
+        LifetimeTeamKillCount = (uint?)playerState.LifetimeTeamKillCount;
+        SkinOverride = playerState.SkinOverride;
     }
 
     public int? Id { get; set; }
-    public string? PlayerId => (IsBot == true) ? BotId : EpicId ?? PlatformUniqueNetId;
-    public string? EpicId { get; set; }
-    public string? PlatformUniqueNetId { get; set; }
-    public string? BotId { get; set; }
-    public bool IsBot { get; set; }
+    public string? PlayerId { get; set; }
     public string? PlayerName { get; set; }
-    public string? PlayerNameCustomOverride { get; set; }
-    public string? StreamerModeName { get; set; }
-    public string Platform { get; set; }
-    public int? Level { get; set; }
-    public uint? SeasonLevelUIDisplay { get; set; }
-
-    public uint? InventoryId { get; set; }
-
-    public int? PlayerNumber { get; set; }
     public int? TeamIndex { get; set; }
-    public bool IsPartyLeader { get; set; }
-    public bool IsReplayOwner { get; set; }
-    public bool? IsGameSessionOwner { get; set; }
-    public bool? HasFinishedLoading { get; set; }
-    public bool? HasStartedPlaying { get; set; }
-    public bool? HasThankedBusDriver { get; set; }
-    public bool? IsUsingStreamerMode { get; set; }
-    public bool? IsUsingAnonymousMode { get; set; }
-    public bool? Disconnected { get; internal set; }
+    public uint? Kills { get; set; }
+    public uint? Deaths { get; set; }
+    public uint? Assists { get; set; }
+    public uint? Cash { get; set; }
+    public int? PlatformId { get; set; }
+    public bool? bDead { get; set; }
+    public float? PlayerHeight { get; set; }
+    public bool? bRightHanded { get; set; }
+    public bool? bVirtualStock { get; set; }
+    public bool? bSpeaking { get; set; }
+    public uint? LifetimeTeamKillCount { get; set; }
+    public string? SkinOverride { get; set; }
 
     public uint? RebootCounter { get; set; }
     public int? Placement { get; set; }
-    public uint? Kills { get; set; }
     public uint? TeamKills { get; set; }
     public int? DeathCause { get; set; }
     public int? DeathCircumstance { get; set; }
@@ -72,7 +52,6 @@ public class PlayerData
     public FVector? DeathLocation { get; set; }
     public float? DeathTime { get; set; }
     public double? DeathTimeDouble { get; set; }
-    public Cosmetics Cosmetics { get; set; }
     public uint? CurrentWeapon { get; internal set; }
 
     public IList<PlayerMovement> Locations { get; set; } = new List<PlayerMovement>();

@@ -5,7 +5,7 @@ using Unreal.Core.Models.Enums;
 
 namespace PavlovReplayReader.Models.NetFieldExports.RPC;
 
-[NetFieldExportGroup("/Script/FortniteGame.FortPlayerStateAthena:Client_OnNewLevel", minimalParseMode: ParseMode.Debug)]
+[NetFieldExportGroup("/Script/FortniteGame.PavlovPlayerStateAthena:Client_OnNewLevel", minimalParseMode: ParseMode.Debug)]
 public class OnNewLevel : INetFieldExportGroup
 {
     [NetFieldExport("NewLevel", RepLayoutCmdType.PropertyInt)]

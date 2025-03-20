@@ -82,7 +82,9 @@ public class BitReader : FBitArchive
 
     public override bool ReadBit()
     {
-        if (AtEnd() || IsError)
+        // TODO: This sometimes causes an indefinite loop on some replays due to IsError being set to true. Investigate.
+        //if (AtEnd() || IsError)
+        if (AtEnd())
         {
             IsError = true;
             return false;
