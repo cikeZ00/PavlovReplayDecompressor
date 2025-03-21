@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Unreal.Core.Models;
 
@@ -32,6 +33,8 @@ public class FVector
     public static bool operator ==(FVector v1, FVector v2) => v1?.X == v2?.X && v1?.Y == v2?.Y && v1?.Z == v2?.Z;
 
     public static bool operator !=(FVector v1, FVector v2) => v1?.X != v2?.X || v1?.Y != v2?.Y || v1?.Z != v2?.Z;
+
+    public static implicit operator List<object>(FVector v) => throw new NotImplementedException();
 
     public override bool Equals(object obj)
     {

@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using FortniteReplayReader;
-using FortniteReplayReader.Models;
+using PavlovReplayReader;
+using PavlovReplayReader.Models;
 
 namespace BenchmarkReader;
 

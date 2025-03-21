@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - .Net 5.0
 - Performance improvements (by [razfriman](https://github.com/razfriman/) and [SL-x-TnT](https://github.com/SL-x-TnT))
 - IL delegates (by [SL-x-TnT](https://github.com/SL-x-TnT)))
-- Moved Unreal.Encryption dependency to FortniteReplayReader
+- Moved Unreal.Encryption dependency to PavlovReplayReader
 
 ## [1.1.2] - 2020-08-09
 ### Added

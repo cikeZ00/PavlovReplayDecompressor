@@ -1,22 +1,21 @@
-﻿using FortniteReplayReader;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using PavlovReplayReader;
 using Unreal.Core.Models.Enums;
 
-// Set up dependency injection and logging services
 var serviceCollection = new ServiceCollection()
     .AddLogging(loggingBuilder => loggingBuilder
         .AddConsole()
-        .SetMinimumLevel(LogLevel.Warning));
+        .SetMinimumLevel(LogLevel.Error));
 var provider = serviceCollection.BuildServiceProvider();
 var logger = provider.GetService<ILogger<Program>>();
 
-// Define the folder containing replay files
-//var replayFilesFolder = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), @"FortniteGame\Saved\Demos");
-var replayFilesFolder = @"C:\Users\ferro\Downloads\";
+var replayFilesFolder = @"C:\Users\cikeZ00\Downloads\";
 var replayFiles = Directory.EnumerateFiles(replayFilesFolder, "*.replay");
 
 var sw = new Stopwatch();
@@ -34,6 +33,16 @@ foreach (var replayFile in replayFiles)
     try
     {
         var replay = reader.ReadReplay(replayFile);
+        var gameData = replay.GameData;
+
+        var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        });
+
+        var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
+        File.WriteAllText(jsonFilePath, json);
     }
     catch (Exception ex)
     {

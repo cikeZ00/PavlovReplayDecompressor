@@ -8,7 +8,7 @@
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FortniteReplayReader\FortniteReplayReader.csproj" />
+    <ProjectReference Include="..\PavlovReplayReader\PavlovReplayReader.csproj" />
     <ProjectReference Include="..\OozSharp\OozSharp.csproj" />
     <ProjectReference Include="..\Unreal.Core\Unreal.Core.csproj" />
     <ProjectReference Include="..\Unreal.Encryption\Unreal.Encryption.csproj" />

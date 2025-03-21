@@ -5,7 +5,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FortniteReplayReader\FortniteReplayReader.csproj" />
+    <ProjectReference Include="..\PavlovReplayReader\PavlovReplayReader.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Replays\chapter5season5.replay">
