@@ -290,7 +290,7 @@ public class PavlovReplayBuilder
 
         if (pawn.PlayerState.HasValue)
         {
-            // Update _pawnChannelToStateChannel everytime we receive a PlayerState value for a given channel
+            // Update _pawnChannelToStateChannel every time we receive a PlayerState value for a given channel
             var actorId = pawn.PlayerState.Value;
             if (_actorToChannel.TryGetValue(actorId, out var stateChannelIndex))
             {
@@ -314,7 +314,6 @@ public class PavlovReplayBuilder
             }
 
             playerState = _players[stateChannelIndex];
-
         }
         else
         {
@@ -324,55 +323,35 @@ public class PavlovReplayBuilder
             }
         }
 
-        //playerState.Cosmetics.Character ??= pawn.Character?.Name;
-        //playerState.Cosmetics.BannerColorId ??= pawn.BannerColorId;
-        //playerState.Cosmetics.BannerIconId ??= pawn.BannerIconId;
-        //playerState.Cosmetics.IsDefaultCharacter ??= pawn.bIsDefaultCharacter;
-        //playerState.Cosmetics.Backpack ??= pawn.Backpack?.Name;
-        //playerState.Cosmetics.PetSkin ??= pawn.PetSkin?.Name;
-        //playerState.Cosmetics.Glider ??= pawn.Glider?.Name;
-        //playerState.Cosmetics.LoadingScreen ??= pawn.LoadingScreen?.Name;
-        //playerState.Cosmetics.MusicPack ??= pawn.MusicPack?.Name;
-        //playerState.Cosmetics.Pickaxe ??= pawn.Pickaxe?.Name;
-        //playerState.Cosmetics.SkyDiveContrail ??= pawn.SkyDiveContrail?.Name;
-        //playerState.Cosmetics.Dances ??= pawn.Dances?.Select(i => i.Name);
-        //playerState.Cosmetics.ItemWraps ??= pawn.ItemWraps?.Select(i => i.Name);
+        // Update player state with new pawn properties
+        playerState.Instigator = pawn.Instigator;
+        playerState.Controller = pawn.Controller;
+        playerState.RevivePlayerState = pawn.RevivePlayerState;
+        playerState.AvatarSkinClass = pawn.AvatarSkinClass;
+        playerState.CustomMesh = pawn.CustomMesh;
+        playerState.RadioChannel = pawn.RadioChannel;
+        playerState.Armour = pawn.Armour;
+        playerState.HelmetArmour = pawn.HelmetArmour;
+        playerState.TeamId = pawn.TeamId;
+        playerState.WorkshopProxy = pawn.WorkshopProxy;
+        playerState.AvatarId = pawn.AvatarId;
 
-        if (pawn.CurrentWeapon != null)
+        // Create a new PlayerMovement using explicit location and rotation fields
+        var newMovement = new PlayerMovement
         {
-            playerState.CurrentWeapon = pawn.CurrentWeapon;
-        }
+            Location = pawn.Location,
+            Velocity = pawn.Velocity,
+            Heading = pawn.Heading,
+            Rotation = pawn.Rotation,
+        };
 
-        if (pawn.ReplicatedMovement != null)
-        {
-            var newLocation = new PlayerMovement
-            {
-                ReplicatedMovement = pawn.ReplicatedMovement,
-                ReplicatedWorldTimeSeconds = ReplicatedWorldTimeSeconds,
-                ReplicatedWorldTimeSecondsDouble = ReplicatedWorldTimeSecondsDouble,
-                LastUpdateTime = pawn.ReplayLastTransformUpdateTimeStamp,
-                bIsCrouched = pawn.bIsCrouched,
-                bIsInAnyStorm = pawn.bIsInAnyStorm,
-                bIsZiplining = pawn.bIsZiplining,
-                bIsTargeting = pawn.bIsTargeting,
-                bIsHonking = pawn.bIsHonking,
-                bIsJumping = pawn.bIsJumping,
-                bIsPlayingEmote = pawn.bIsPlayingEmote,
-                bIsSprinting = pawn.bIsSprinting,
-                bIsWaitingForEmoteInteraction = pawn.bIsWaitingForEmoteInteraction,
-                bIsSlopeSliding = pawn.bIsSlopeSliding,
-                bIsSkydiving = pawn.bIsSkydiving,
-                bIsSkydivingFromLaunchPad = pawn.bIsSkydivingFromLaunchPad,
-                bIsSkydivingFromBus = pawn.bIsSkydivingFromBus,
-                bIsParachuteOpen = pawn.bIsParachuteOpen,
-                bIsParachuteForcedOpen = pawn.bIsParachuteForcedOpen,
-                bIsDBNO = pawn.bIsDBNO,
-                bIsInWaterVolume = pawn.bIsInWaterVolume,
-            };
-            playerState.Locations.Add(newLocation);
-        }
-
+        playerState.Locations.Add(newMovement);
     }
+
+
+
+
+
 
     public void UpdateInventory(uint channelIndex, FortInventory fortInventory)
     {

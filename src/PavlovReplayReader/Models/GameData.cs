@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 namespace PavlovReplayReader.Models;
+// TODO: Remove unused properties
 
 public class GameData
 {

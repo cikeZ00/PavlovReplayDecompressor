@@ -102,6 +102,7 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
         switch (exportGroup)
         {
             case GameState state:
+                // DONE
                 // DEBUG: GameState print
                 //foreach (var property in state.GetType().GetProperties())
                 //{
@@ -113,10 +114,13 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
                 //}
                 Builder.UpdateGameState(state);
                 break;
+
             //case PlaylistInfo playlist:
             //    Builder.UpdatePlaylistInfo(playlist);
             //    break;
+
             case PavlovPlayerState state:
+                // DONE
                 // DEBUG: PlayerState print
                 //foreach (var property in state.GetType().GetProperties())
                 //{
@@ -129,9 +133,11 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
 
                 Builder.UpdatePlayerState(channelIndex, state);
                 break;
+
             case PlayerPawn pawn:
                 Builder.UpdatePlayerPawn(channelIndex, pawn);
                 break;
+
             //case FortPickup pickup:
             //Builder.CreatePickupEvent(channelIndex, pickup);
             //break;
