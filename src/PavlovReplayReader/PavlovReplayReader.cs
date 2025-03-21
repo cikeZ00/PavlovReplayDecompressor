@@ -19,7 +19,7 @@ using Unreal.Encryption;
 
 namespace PavlovReplayReader;
 
-public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
+public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
 {
     private PavlovReplayBuilder Builder;
 
@@ -27,13 +27,13 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
     {
     }
 
-    public FortniteReplay ReadReplay(string fileName)
+    public PavlovReplay ReadReplay(string fileName)
     {
         using var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return ReadReplay(stream);
     }
 
-    public FortniteReplay ReadReplay(Stream stream)
+    public PavlovReplay ReadReplay(Stream stream)
     {
         using var archive = new Unreal.Core.BinaryReader(stream);
 
@@ -91,9 +91,6 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
             //case FortInventory inventory:
             //    Builder.UpdateInventory(channelIndex, inventory);
             //    break;
-            case SpawnMachineRepData spawnMachine:
-                Builder.UpdateRebootVan(channelIndex, spawnMachine);
-                break;
         }
     }
 
@@ -147,18 +144,6 @@ public class ReplayReader : Unreal.Core.ReplayReader<FortniteReplay>
             //case BroadcastExplosion explosion:
             //    Builder.UpdateExplosion(explosion);
             //    break;
-            case SafeZoneIndicator safeZone:
-                Builder.UpdateSafeZones(safeZone);
-                break;
-            case SupplyDropLlama llama:
-                Builder.UpdateLlama(channelIndex, llama);
-                break;
-            case Models.NetFieldExports.SupplyDrop drop:
-                Builder.UpdateSupplyDrop(channelIndex, drop);
-                break;
-            case FortPoiManager poimanager:
-                Builder.UpdatePoiManager(poimanager);
-                break;
             //case GameplayCue gameplayCue:
             //    Builder.UpdateGameplayCue(channelIndex, gameplayCue);
             //    break;

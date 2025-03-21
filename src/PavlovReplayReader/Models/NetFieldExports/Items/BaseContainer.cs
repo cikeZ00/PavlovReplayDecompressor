@@ -34,12 +34,6 @@ public abstract class BaseContainer : INetFieldExportGroup
     [NetFieldExport("WeaponData", RepLayoutCmdType.Property)]
     public ItemDefinition WeaponData { get; set; }
 
-    [NetFieldExport("BuildTime", RepLayoutCmdType.Ignore)]
-    public FQuantizedBuildingAttribute BuildTime { get; set; }
-
-    [NetFieldExport("RepairTime", RepLayoutCmdType.Ignore)]
-    public FQuantizedBuildingAttribute RepairTime { get; set; }
-
     [NetFieldExport("Health", RepLayoutCmdType.PropertyUInt16)]
     public ushort Health { get; set; }
 

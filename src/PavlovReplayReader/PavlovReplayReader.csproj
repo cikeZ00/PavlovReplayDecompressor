@@ -9,7 +9,7 @@
     <Description>Pavlov Replay reader</Description>
     <Copyright>Copyright © 2020 Shiqan</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/Shiqan/FortniteReplayDecompressor</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Shiqan/PavlovReplayDecompressor</PackageProjectUrl>
     <PackageTags>Pavlov Unreal Engine Replay Reader</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>

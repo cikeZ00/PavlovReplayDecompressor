@@ -4,7 +4,7 @@ using Unreal.Core.Models;
 
 namespace PavlovReplayReader.Models;
 
-public class FortniteReplay : Replay
+public class PavlovReplay : Replay
 {
     /// <summary>
     /// Eliminations found in the event chunks. See <see cref="KillFeed"/> for a much more detailed list of eliminations.
@@ -44,5 +44,4 @@ public class FortniteReplay : Replay
     /// <summary>
     /// Map information
     /// </summary>
-    public MapData MapData { get; internal set; } = new MapData();
 }

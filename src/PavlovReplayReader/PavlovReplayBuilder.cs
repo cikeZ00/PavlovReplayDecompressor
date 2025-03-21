@@ -8,12 +8,11 @@ using System.Linq;
 namespace PavlovReplayReader;
 
 /// <summary>
-/// Responsible for constructing the <see cref="FortniteReplay"/> out of the received exports.
+/// Responsible for constructing the <see cref="PavlovReplay"/> out of the received exports.
 /// </summary>
 public class PavlovReplayBuilder
 {
     private readonly GameData GameData = new();
-    private readonly MapData MapData = new();
     private readonly List<KillFeedEntry> KillFeed = new();
 
     private readonly Dictionary<uint, uint> _actorToChannel = new();
@@ -28,9 +27,6 @@ public class PavlovReplayBuilder
     private readonly HashSet<uint> _onlySpectatingPlayers = new();
     private readonly Dictionary<uint, PlayerData> _players = new();
     private readonly Dictionary<int?, TeamData> _teams = new();
-    private readonly Dictionary<uint, Llama> _llamas = new();
-    private readonly Dictionary<int, RebootVan> _rebootVans = new();
-    private readonly Dictionary<uint, Models.SupplyDrop> _drops = new();
 
     private readonly Dictionary<uint, Inventory> _inventories = new();
     private readonly Dictionary<uint, WeaponData> _weapons = new();
@@ -55,12 +51,11 @@ public class PavlovReplayBuilder
     /// Once a replay is fully parsed, add the data build over time to the replay.
     /// </summary>
     /// <param name="replay"></param>
-    /// <returns>FortniteReplay</returns>
-    public FortniteReplay Build(FortniteReplay replay)
+    /// <returns>PavlovReplay</returns>
+    public PavlovReplay Build(PavlovReplay replay)
     {
         UpdateTeamData();
         replay.GameData = GameData;
-        replay.MapData = MapData;
         replay.KillFeed = KillFeed;
         replay.TeamData = _teams.Values;
         replay.PlayerData = _players.Values;
@@ -408,104 +403,12 @@ public class PavlovReplayBuilder
         newWeapon.WeaponName ??= weapon.WeaponData?.Name;
     }
 
-    public void UpdateSafeZones(SafeZoneIndicator safeZone)
-    {
-        if (safeZone.SafeZoneStartShrinkTime <= 0 && safeZone.SafeZoneFinishShrinkTime <= 0)
-        {
-            return;
-        }
-
-        MapData.SafeZones.Add(new SafeZone(safeZone));
-    }
-
-    public void UpdateLlama(uint channelIndex, SupplyDropLlama supplyDropLlama)
-    {
-        if (!_llamas.TryGetValue(channelIndex, out var llama))
-        {
-            llama = new Llama(channelIndex, supplyDropLlama);
-            MapData.Llamas.Add(llama);
-            _llamas.Add(channelIndex, llama);
-            return;
-        }
-
-        llama.LandingLocation ??= supplyDropLlama.FinalDestination;
-
-        if (supplyDropLlama.Looted)
-        {
-            llama.Looted = true;
-            llama.LootedTime = ReplicatedWorldTimeSeconds;
-            llama.LootedTimeDouble = ReplicatedWorldTimeSecondsDouble;
-        }
-
-        if (supplyDropLlama.bHasSpawnedPickups)
-        {
-            llama.HasSpawnedPickups = true;
-        }
-    }
-
-    public void UpdateSupplyDrop(uint channelIndex, Models.NetFieldExports.SupplyDrop supplyDrop)
-    {
-        if (!_drops.TryGetValue(channelIndex, out var drop))
-        {
-            drop = new Models.SupplyDrop(channelIndex, supplyDrop);
-            MapData.SupplyDrops.Add(drop);
-            _drops.Add(channelIndex, drop);
-            return;
-        }
-
-        if (supplyDrop.Opened)
-        {
-            drop.Looted = true;
-            drop.LootedTime = ReplicatedWorldTimeSeconds;
-            drop.LootedTimeDouble = ReplicatedWorldTimeSecondsDouble;
-        }
-
-        if (supplyDrop.BalloonPopped)
-        {
-            drop.BalloonPopped = true;
-            drop.BalloonPoppedTime = ReplicatedWorldTimeSeconds;
-            drop.BalloonPoppedTimeDouble = ReplicatedWorldTimeSecondsDouble;
-
-        }
-
-        if (supplyDrop.bHasSpawnedPickups)
-        {
-            drop.HasSpawnedPickups = true;
-        }
-
-        if (supplyDrop.LandingLocation != null)
-        {
-            drop.LandingLocation = supplyDrop.LandingLocation;
-        }
-    }
-
-    public void UpdateRebootVan(uint channelIndex, SpawnMachineRepData spawnMachine)
-    {
-        if (!_rebootVans.TryGetValue(spawnMachine.SpawnMachineRepDataHandle, out var rebootVan))
-        {
-            rebootVan = new RebootVan(spawnMachine);
-            MapData.RebootVans.Add(rebootVan);
-            _rebootVans.Add(spawnMachine.SpawnMachineRepDataHandle, rebootVan);
-            return;
-        }
-    }
 
     //public void UpdateExplosion(BroadcastExplosion explosion)
     //{
     //    // ¯\_(ツ)_/¯
     //}
 
-    public void UpdatePoiManager(FortPoiManager poiManager)
-    {
-        MapData.GridCountX ??= poiManager.GridCountX;
-        MapData.GridCountY ??= poiManager.GridCountY;
-        MapData.WorldGridStart ??= poiManager.WorldGridStart;
-        MapData.WorldGridEnd ??= poiManager.WorldGridEnd;
-        MapData.WorldGridSpacing ??= poiManager.WorldGridSpacing;
-        MapData.WorldGridTotalSize ??= poiManager.WorldGridTotalSize;
-
-        // ignore PoiTagContainerTable since it is just a list of all POI...
-    }
 
     //public void UpdateGameplayCue(uint channelIndex, GameplayCue gameplayCue)
     //{
