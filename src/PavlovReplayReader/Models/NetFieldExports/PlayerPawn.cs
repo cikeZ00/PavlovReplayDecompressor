@@ -72,7 +72,14 @@ public class PlayerPawn : INetFieldExportGroup
     // TODO: Figure out how to handle the multiple entries of the Location property
 
     [NetFieldExport("Location", RepLayoutCmdType.PropertyVector100)]
-    public FVector Location { get; set; }
+    public FVector? Location { get; set; }
+    [NetFieldExport("Location1", RepLayoutCmdType.PropertyVector100)]
+    public FVector? Location1 { get; set; }
+    [NetFieldExport("Location2", RepLayoutCmdType.PropertyVector100)]
+    public FVector? Location2 { get; set; }
+    [NetFieldExport("Location3", RepLayoutCmdType.PropertyVector100)]
+    public FVector? Location3 { get; set; }
+
 
     [NetFieldExport("Velocity", RepLayoutCmdType.PropertyVector10)]
     public FVector Velocity { get; set; }
@@ -85,7 +92,11 @@ public class PlayerPawn : INetFieldExportGroup
 
     // TODO: Figure out how to handle the multiple entries of the Rotation property
     [NetFieldExport("Rotation", RepLayoutCmdType.PropertyRotator)]
-    public FRotator Rotation { get; set; }
+    public FRotator? Rotation { get; set; }
+    [NetFieldExport("Rotation1", RepLayoutCmdType.PropertyRotator)]
+    public FRotator? Rotation1 { get; set; }
+    [NetFieldExport("Rotation2", RepLayoutCmdType.PropertyRotator)]
+    public FRotator? Rotation2 { get; set; }
 
     [NetFieldExport("InventoryLogic", RepLayoutCmdType.PropertyObject)]
     public uint? InventoryLogic { get; set; }

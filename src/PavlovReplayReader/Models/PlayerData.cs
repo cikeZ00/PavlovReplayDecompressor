@@ -9,28 +9,28 @@ public class PlayerData
 {
     public PlayerData(PavlovPlayerState playerState)
     {
-        Id = playerState.PlayerId;
-        PlayerId = playerState.UniqueID;
-        PlayerName = playerState.PlayerNamePrivate;
-        TeamIndex = playerState.TeamId;
-        Kills = (uint?) playerState.Kills;
-        Deaths = (uint?) playerState.Deaths;
-        Assists = (uint?) playerState.Assists;
-        Cash = (uint?) playerState.Cash;
-        PlatformId = playerState.PlatformId;
-        bDead = playerState.bDead;
-        PlayerHeight = playerState.PlayerHeight;
-        bRightHanded = playerState.bRightHanded;
-        bVirtualStock = playerState.bVirtualStock;
-        bSpeaking = playerState.bSpeaking;
-        LifetimeTeamKillCount = (uint?) playerState.LifetimeTeamKillCount;
-        SkinOverride = playerState.SkinOverride;
+        Id = playerState.PlayerId ?? Id;
+        PlayerId = playerState.UniqueID ?? PlayerId;
+        PlayerName = playerState.PlayerNamePrivate ?? PlayerName;
+        TeamIndex = playerState.TeamId ?? TeamIndex;
+        Kills = (uint?) playerState.Kills ?? Kills;
+        Deaths = (uint?) playerState.Deaths ?? Deaths;
+        Assists = (uint?) playerState.Assists ?? Assists;
+        Cash = (uint?) playerState.Cash ?? Cash;
+        PlatformId = playerState.PlatformId ?? PlatformId;
+        bDead = playerState.bDead ?? bDead;
+        PlayerHeight = playerState.PlayerHeight ?? PlayerHeight;
+        bRightHanded = playerState.bRightHanded ?? bRightHanded;
+        bVirtualStock = playerState.bVirtualStock ?? bVirtualStock;
+        bSpeaking = playerState.bSpeaking ?? bSpeaking;
+        LifetimeTeamKillCount = (uint?) playerState.LifetimeTeamKillCount ?? LifetimeTeamKillCount;
+        SkinOverride = playerState.SkinOverride ?? SkinOverride;
     }
 
-    public int? Id { get; set; }
-    public string? PlayerId { get; set; }
-    public string? PlayerName { get; set; }
-    public int? TeamIndex { get; set; }
+    public int? Id { get; set; } = -1;
+    public string? PlayerId { get; set; } = "Unknown";
+    public string? PlayerName { get; set; } = "Unknown";
+    public int? TeamIndex { get; set; } = -1;
     public uint? Kills { get; set; }
     public uint? Deaths { get; set; }
     public uint? Assists { get; set; }
@@ -72,7 +72,10 @@ public class PlayerData
 public class PlayerMovement
 {
     // Multiple location values captured from the replay:
-    public FVector Location { get; set; }
+    public FVector? Location { get; set; }
+    public FVector? Location1 { get; set; }
+    public FVector? Location2 { get; set; }
+    public FVector? Location3 { get; set; }
 
     // Single velocity value:
     public FVector Velocity { get; set; }
@@ -81,7 +84,9 @@ public class PlayerMovement
     public FRotator Heading { get; set; }
 
     // Multiple rotation values captured from the replay:
-    public FRotator Rotation { get; set; } 
+    public FRotator? Rotation { get; set; }
+    public FRotator? Rotation1 { get; set; }
+    public FRotator? Rotation2 { get; set; }
 }
 
 

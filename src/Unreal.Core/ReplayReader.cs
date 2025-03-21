@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Unreal.Core.Contracts;
@@ -1645,7 +1646,6 @@ public abstract class ReplayReader<T> where T : Replay, new()
                 {
                     continue;
                 }
-
                 Debug("not-reading-groups", $"\t\t{field.Name}");
             }
 #endif
@@ -1658,7 +1658,7 @@ public abstract class ReplayReader<T> where T : Replay, new()
             var doChecksum = archive.ReadBit();
         }
 
-        _logger?.LogDebug("ReceiveProperties: group {}", group.PathName);
+        //Console.WriteLine("ReceiveProperties: group {0}", group.PathName);
         exportGroup = _netFieldParser.CreateType(group.PathName);
 
         if (exportGroup is null)
@@ -1666,6 +1666,45 @@ public abstract class ReplayReader<T> where T : Replay, new()
             _logger?.LogWarning("Couldnt create export group of type {}", group.PathName);
             return false;
         }
+
+        // --- Duplicate renaming ---
+        // Helper method to extract the base name (strip trailing digits)
+        string GetBaseName(string name)
+        {
+            int i = name.Length - 1;
+            while (i >= 0 && char.IsDigit(name[i]))
+            {
+                i--;
+            }
+            return name.Substring(0, i + 1);
+        }
+
+        // Use a dictionary keyed on the base name
+        var nameCounts = new Dictionary<string, int>();
+        for (int i = 0; i < group.NetFieldExportsLength; i++)
+        {
+            var field = group.NetFieldExports[i];
+            if (field == null)
+            {
+                continue;
+            }
+            // Normalize the name
+            var baseName = GetBaseName(field.Name);
+            if (!nameCounts.ContainsKey(baseName))
+            {
+                // First occurrence: set counter to 0 and leave the name unchanged.
+                nameCounts[baseName] = 0;
+            }
+            else
+            {
+                // Subsequent occurrence: increment counter and rename the field.
+                nameCounts[baseName]++;
+                string newName = baseName + nameCounts[baseName];
+                //Console.WriteLine($"Renamed duplicate field {field.Name} to {newName}");
+                field.Name = newName;
+            }
+        }
+        // --- End duplicate renaming ---
 
         var hasdata = false;
 
@@ -1707,7 +1746,6 @@ public abstract class ReplayReader<T> where T : Replay, new()
             {
                 _logger?.LogDebug("Incompatible export {name} for group {pathName}, numbits is {numBits}", export.Name, group.PathName, numBits);
                 archive.SkipBits(numBits);
-                // We've already warned that this property doesn't load anymore
                 continue;
             }
 
@@ -1717,10 +1755,8 @@ public abstract class ReplayReader<T> where T : Replay, new()
                 _cmdReader.FillBuffer(archive.ReadBits(numBits), (int) numBits);
                 if (!_netFieldParser.ReadField(exportGroup, export, handle, group, _cmdReader))
                 {
-                    // Set field incompatible since we couldnt (or didnt want to) parse it.
                     export.Incompatible = true;
                 }
-
 
                 if (_cmdReader.IsError)
                 {
@@ -1768,6 +1804,8 @@ public abstract class ReplayReader<T> where T : Replay, new()
 
         return true;
     }
+
+
 
     /// <summary>
     /// see https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/Engine/Private/DataChannel.cpp#L3579

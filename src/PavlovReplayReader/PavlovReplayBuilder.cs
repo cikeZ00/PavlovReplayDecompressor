@@ -195,64 +195,31 @@ public class PavlovReplayBuilder
         if (isNewPlayer)
         {
             playerData = new PlayerData(state);
-
-            //if (_channelToActor.TryGetValue(channelIndex, out var actorId) && actorId == GameData.RecorderId)
-            //{
-            //    playerData.IsReplayOwner = true;
-            //}
-
             _players[channelIndex] = playerData;
         }
 
-        // Update player data with new state properties
-        playerData.Id = state.PlayerId;
-        playerData.PlayerId = state.UniqueID;
-        playerData.PlayerName = state.PlayerNamePrivate;
-        playerData.TeamIndex = state.TeamId;
-        playerData.Kills = (uint?) state.Kills;
-        playerData.Deaths = (uint?) state.Deaths;
-        playerData.Assists = (uint?) state.Assists;
-        playerData.Cash = (uint?) state.Cash;
-        playerData.PlatformId = state.PlatformId;
-        playerData.bDead = state.bDead;
-        playerData.PlayerHeight = state.PlayerHeight;
-        playerData.bRightHanded = state.bRightHanded;
-        playerData.bVirtualStock = state.bVirtualStock;
-        playerData.bSpeaking = state.bSpeaking;
-        playerData.LifetimeTeamKillCount = (uint?) state.LifetimeTeamKillCount;
-        playerData.SkinOverride = state.SkinOverride;
-
-        //if (state.RebootCounter > 0 && state.RebootCounter > playerData.RebootCounter)
-        //{
-        //    playerData.RebootCounter = state.RebootCounter;
-        //}
-
-        //if (state.RebootCounter > 0 || state.bDBNO != null || state.DeathCause != null || state.DeathLocation != null)
-        //{
-        //    UpdateKillFeed(channelIndex, playerData, state);
-        //}
+        // Update player data with new state properties only if they are not null
+        playerData.Id = state.PlayerId ?? playerData.Id;
+        playerData.PlayerId = state.UniqueID ?? playerData.PlayerId;
+        playerData.PlayerName = state.PlayerNamePrivate ?? playerData.PlayerName;
+        playerData.TeamIndex = state.TeamId ?? playerData.TeamIndex;
+        playerData.Kills = (uint?) state.Kills ?? playerData.Kills;
+        playerData.Deaths = (uint?) state.Deaths ?? playerData.Deaths;
+        playerData.Assists = (uint?) state.Assists ?? playerData.Assists;
+        playerData.Cash = (uint?) state.Cash ?? playerData.Cash;
+        playerData.PlatformId = state.PlatformId ?? playerData.PlatformId;
+        playerData.bDead = state.bDead ?? playerData.bDead;
+        playerData.PlayerHeight = state.PlayerHeight ?? playerData.PlayerHeight;
+        playerData.bRightHanded = state.bRightHanded ?? playerData.bRightHanded;
+        playerData.bVirtualStock = state.bVirtualStock ?? playerData.bVirtualStock;
+        playerData.bSpeaking = state.bSpeaking ?? playerData.bSpeaking;
+        playerData.LifetimeTeamKillCount = (uint?) state.LifetimeTeamKillCount ?? playerData.LifetimeTeamKillCount;
+        playerData.SkinOverride = state.SkinOverride ?? playerData.SkinOverride;
 
         if (state.TeamId > 0)
         {
             playerData.TeamIndex = state.TeamId;
         }
-
-        //playerData.TeamKills = state.TeamKillScore ?? playerData.TeamKills;
-        //playerData.Kills = state.KillScore ?? playerData.Kills;
-        //playerData.HasThankedBusDriver ??= state.bThankedBusDriver;
-        //playerData.Disconnected ??= state.bIsDisconnected;
-
-        //playerData.DeathCause ??= state.DeathCause;
-        //playerData.DeathLocation ??= state.DeathLocation;
-        //playerData.DeathCircumstance ??= state.DeathCircumstance;
-        //playerData.DeathTags ??= state.DeathTags?.Tags?.Select(i => i.TagName);
-
-        //if (state.DeathTags != null)
-        //{
-        //    playerData.DeathTime = ReplicatedWorldTimeSeconds;
-        //    playerData.DeathTimeDouble = ReplicatedWorldTimeSecondsDouble;
-        //}
-
 
         if (isNewPlayer)
         {
@@ -262,26 +229,27 @@ public class PavlovReplayBuilder
 
 
 
-    //public void UpdateKillFeed(uint channelIndex, PlayerData data, PavlovPlayerState state)
-    //{
-    //    var entry = new KillFeedEntry()
-    //    {
-    //        Killer = state.Killer,
-    //        Victim = state.Victim,
-    //        DamageCauser = state.DamageCauser,
-    //        bHeadshot = state.bHeadshot,
-    //        KillerName = state.KillerName,
-    //        KillerTeamId = state.KillerTeamId,
-    //        KillerId = state.KillerId,
-    //        VictimName = state.VictimName,
-    //        VictimTeamId = state.VictimTeamId,
-    //        VictimId = state.VictimId,
-    //        EntryLifespan = state.EntryLifespan,
-    //        bLocalPlayer = state.bLocalPlayer
-    //    };
 
-    //    KillFeed.Add(entry);
-    //}
+    public void UpdateKillFeed(uint channelIndex, PlayerData data, GameState state)
+    {
+        var entry = new KillFeedEntry()
+        {
+            Killer = data.Instigator,
+            Victim = (uint?) data.Id,
+            DamageCauser = "placeholder",
+            bHeadshot = data.bDead ?? false,
+            KillerName = data.PlayerName,
+            KillerTeamId = data.TeamIndex,
+            KillerId = data.Instigator,
+            VictimName = data.PlayerName,
+            VictimTeamId = data.TeamIndex,
+            VictimId = (uint?) data.Id,
+            EntryLifespan = data.DeathTime ?? 0,
+            bLocalPlayer = data.bSpeaking ?? false
+        };
+
+        KillFeed.Add(entry);
+    }
 
 
     public void UpdatePlayerPawn(uint channelIndex, PlayerPawn pawn)
@@ -340,9 +308,14 @@ public class PavlovReplayBuilder
         var newMovement = new PlayerMovement
         {
             Location = pawn.Location,
+            Location1 = pawn.Location1,
+            Location2 = pawn.Location2,
+            Location3 = pawn.Location3,
             Velocity = pawn.Velocity,
             Heading = pawn.Heading,
             Rotation = pawn.Rotation,
+            Rotation1 = pawn.Rotation1,
+            Rotation2 = pawn.Rotation2,
         };
 
         playerState.Locations.Add(newMovement);
