@@ -71,13 +71,13 @@ public class PlayerPawn : INetFieldExportGroup
 
     // TODO: Figure out how to handle the multiple entries of the Location property
 
-    [NetFieldExport("Location", RepLayoutCmdType.PropertyVector100)]
+    [NetFieldExport("Location", RepLayoutCmdType.PropertyVector)]
     public FVector? Location { get; set; }
-    [NetFieldExport("Location1", RepLayoutCmdType.PropertyVector100)]
+    [NetFieldExport("Location1", RepLayoutCmdType.PropertyVector)]
     public FVector? Location1 { get; set; }
-    [NetFieldExport("Location2", RepLayoutCmdType.PropertyVector100)]
+    [NetFieldExport("Location2", RepLayoutCmdType.PropertyVector)]
     public FVector? Location2 { get; set; }
-    [NetFieldExport("Location3", RepLayoutCmdType.PropertyVector100)]
+    [NetFieldExport("Location3", RepLayoutCmdType.PropertyVector)]
     public FVector? Location3 { get; set; }
 
 
@@ -110,17 +110,32 @@ public class PlayerPawn : INetFieldExportGroup
     [NetFieldExport("Index", RepLayoutCmdType.PropertyByte)]
     public byte? Index { get; set; }
 
+    [NetFieldExport("Index1", RepLayoutCmdType.PropertyByte)]
+    public byte? Index1 { get; set; }
+
     [NetFieldExport("Midle", RepLayoutCmdType.PropertyByte)]
     public byte? Midle { get; set; }
+
+    [NetFieldExport("Midle1", RepLayoutCmdType.PropertyByte)]
+    public byte? Midle1 { get; set; }
 
     [NetFieldExport("Ring", RepLayoutCmdType.PropertyByte)]
     public byte? Ring { get; set; }
 
+    [NetFieldExport("Ring1", RepLayoutCmdType.PropertyByte)]
+    public byte? Ring1 { get; set; }
+
     [NetFieldExport("Pinky", RepLayoutCmdType.PropertyByte)]
     public byte? Pinky { get; set; }
 
+    [NetFieldExport("Pinky1", RepLayoutCmdType.PropertyByte)]
+    public byte? Pinky1 { get; set; }
+
     [NetFieldExport("Thumb", RepLayoutCmdType.PropertyByte)]
     public byte? Thumb { get; set; }
+
+    [NetFieldExport("Thumb1", RepLayoutCmdType.PropertyByte)]
+    public byte? Thumb1 { get; set; }
 
     [NetFieldExport("Supported", RepLayoutCmdType.PropertyBool)]
     public bool? Supported { get; set; }
@@ -134,11 +149,11 @@ public class PlayerPawn : INetFieldExportGroup
     [NetFieldExport("RadioChannel", RepLayoutCmdType.PropertyByte)]
     public byte? RadioChannel { get; set; }
 
-    [NetFieldExport("Armour", RepLayoutCmdType.PropertyByte)]
-    public byte? Armour { get; set; }
+    [NetFieldExport("Armour", RepLayoutCmdType.PropertyInt)]
+    public int? Armour { get; set; }
 
-    [NetFieldExport("HelmetArmour", RepLayoutCmdType.PropertyByte)]
-    public byte? HelmetArmour { get; set; }
+    [NetFieldExport("HelmetArmour", RepLayoutCmdType.PropertyInt)]
+    public int? HelmetArmour { get; set; }
 
     [NetFieldExport("TeamId", RepLayoutCmdType.PropertyByte)]
     public byte? TeamId { get; set; }

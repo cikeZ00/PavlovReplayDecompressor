@@ -120,6 +120,9 @@ public class PavlovReplayBuilder
         GameData.ModId ??= state.ModId;
         GameData.ModPath ??= state.ModPath;
         GameData.GlobalInfo ??= state.GlobalInfo;
+        GameData.bNoTeams ??= state.bNoTeams;
+        GameData.bShowNameTags ??= state.bShowNameTags;
+        GameData.BuyMenuScript ??= state.BuyMenuScript;
     }
 
 

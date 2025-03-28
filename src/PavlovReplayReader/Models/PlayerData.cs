@@ -60,8 +60,8 @@ public class PlayerData
     public uint? AvatarSkinClass { get; set; }
     public uint? CustomMesh { get; set; }
     public byte? RadioChannel { get; set; }
-    public byte? Armour { get; set; }
-    public byte? HelmetArmour { get; set; }
+    public int? Armour { get; set; }
+    public int? HelmetArmour { get; set; }
     public byte? TeamId { get; set; }
     public uint? WorkshopProxy { get; set; }
     public int? AvatarId { get; set; }

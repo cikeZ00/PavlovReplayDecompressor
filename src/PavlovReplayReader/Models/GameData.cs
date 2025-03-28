@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 namespace PavlovReplayReader.Models;
-// TODO: Remove unused properties
 
 public class GameData
 {
@@ -27,4 +26,7 @@ public class GameData
     public int? ModId { get; set; }
     public string ModPath { get; set; }
     public uint? GlobalInfo { get; set; }
+    public bool? bNoTeams { get; set; }
+    public bool? bShowNameTags { get; set; }
+    public string BuyMenuScript { get; set; }
 }

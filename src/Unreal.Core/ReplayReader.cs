@@ -570,7 +570,7 @@ public abstract class ReplayReader<T> where T : Replay, new()
 
         if (fileVersion >= ReplayVersionHistory.HISTORY_ENCRYPTION)
         {
-            info.IsEncrypted = archive.ReadUInt32AsBoolean();
+            info.IsEncrypted = archive.ReadUInt32AsBoolean(); 
             var size = archive.ReadUInt32();
             info.EncryptionKey = archive.ReadBytes(size).ToArray();
         }

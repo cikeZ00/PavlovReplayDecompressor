@@ -86,7 +86,17 @@ public class GameState : INetFieldExportGroup
 
     [NetFieldExport("GlobalInfo", RepLayoutCmdType.Ignore)]
     public uint? GlobalInfo { get; set; }
+
+    [NetFieldExport("bNoTeams", RepLayoutCmdType.PropertyBool)]
+    public bool? bNoTeams { get; set; }
+
+    [NetFieldExport("bShowNameTags", RepLayoutCmdType.PropertyBool)]
+    public bool? bShowNameTags { get; set; }
+
+    [NetFieldExport("BuyMenuScript", RepLayoutCmdType.PropertyString)]
+    public string BuyMenuScript { get; set; }
 }
+
 
 public class KillfeedEntry
 {
