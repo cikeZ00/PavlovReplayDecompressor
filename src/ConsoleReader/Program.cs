@@ -11,7 +11,7 @@ using Unreal.Core.Models.Enums;
 var serviceCollection = new ServiceCollection()
     .AddLogging(loggingBuilder => loggingBuilder
         .AddConsole()
-        .SetMinimumLevel(LogLevel.Debug));
+        .SetMinimumLevel(LogLevel.Critical));
 var provider = serviceCollection.BuildServiceProvider();
 var logger = provider.GetService<ILogger<Program>>();
 
@@ -22,7 +22,7 @@ var sw = new Stopwatch();
 long total = 0;
 
 #if DEBUG
-var reader = new ReplayReader(logger, ParseMode.Full);
+var reader = new ReplayReader(logger, ParseMode.Debug);
 #else
 var reader = new ReplayReader(null, ParseMode.Minimal);
 #endif

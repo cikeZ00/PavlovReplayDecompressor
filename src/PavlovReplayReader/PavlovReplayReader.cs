@@ -4,7 +4,7 @@ using PavlovReplayReader.Models;
 using PavlovReplayReader.Models.Enums;
 using PavlovReplayReader.Models.Events;
 using PavlovReplayReader.Models.NetFieldExports;
-using PavlovReplayReader.Models.NetFieldExports.Weapons;
+//using PavlovReplayReader.Models.NetFieldExports.Weapons;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -147,9 +147,9 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
             //case GameplayCue gameplayCue:
             //    Builder.UpdateGameplayCue(channelIndex, gameplayCue);
             //    break;
-            case BaseWeapon weapon:
-                Builder.UpdateWeapon(channelIndex, weapon);
-                break;
+            //case BaseWeapon weapon:
+            //    Builder.UpdateWeapon(channelIndex, weapon);
+            //    break;
         }
     }
 

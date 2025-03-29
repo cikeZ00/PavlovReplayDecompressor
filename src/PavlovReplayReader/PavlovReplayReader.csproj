@@ -27,4 +27,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\NetFieldExports\Consumables\" />
+    <Folder Include="Models\NetFieldExports\Items\" />
+    <Folder Include="Models\NetFieldExports\Vehicles\" />
+    <Folder Include="Models\NetFieldExports\Weapons\" />
+  </ItemGroup>
 </Project>

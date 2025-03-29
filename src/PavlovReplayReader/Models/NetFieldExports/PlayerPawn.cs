@@ -69,7 +69,7 @@ public class PlayerPawn : INetFieldExportGroup
     [NetFieldExport("Controller", RepLayoutCmdType.PropertyObject)]
     public uint? Controller { get; set; }
 
-    // TODO: Figure out how to handle the multiple entries of the Location property
+    // TODO: Identify which location property is which body part
 
     [NetFieldExport("Location", RepLayoutCmdType.PropertyVector)]
     public FVector? Location { get; set; }
@@ -80,17 +80,16 @@ public class PlayerPawn : INetFieldExportGroup
     [NetFieldExport("Location3", RepLayoutCmdType.PropertyVector)]
     public FVector? Location3 { get; set; }
 
-
     [NetFieldExport("Velocity", RepLayoutCmdType.PropertyVector10)]
     public FVector Velocity { get; set; }
 
-    [NetFieldExport("Heading", RepLayoutCmdType.PropertyRotator)]
-    public FRotator Heading { get; set; }
+    [NetFieldExport("Heading", RepLayoutCmdType.PropertyFloat)]
+    public float Heading { get; set; }
 
     [NetFieldExport("Flags", RepLayoutCmdType.PropertyByte)]
     public byte? Flags { get; set; }
 
-    // TODO: Figure out how to handle the multiple entries of the Rotation property
+    // TODO: Identify which location property is which body part
     [NetFieldExport("Rotation", RepLayoutCmdType.PropertyRotator)]
     public FRotator? Rotation { get; set; }
     [NetFieldExport("Rotation1", RepLayoutCmdType.PropertyRotator)]

@@ -81,7 +81,7 @@ public class PlayerMovement
     public FVector Velocity { get; set; }
 
     // Heading, which is stored separately:
-    public FRotator Heading { get; set; }
+    public float Heading { get; set; }
 
     // Multiple rotation values captured from the replay:
     public FRotator? Rotation { get; set; }

@@ -1,6 +1,6 @@
 ﻿using PavlovReplayReader.Models;
 using PavlovReplayReader.Models.NetFieldExports;
-using PavlovReplayReader.Models.NetFieldExports.Weapons;
+//using PavlovReplayReader.Models.NetFieldExports.Weapons;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -324,87 +324,87 @@ public class PavlovReplayBuilder
 
 
 
-    public void UpdateInventory(uint channelIndex, FortInventory fortInventory)
-    {
-        if (!_inventories.TryGetValue(channelIndex, out var inventory))
-        {
-            // TODO updates for unknown parent inventory !?
-            // TODO receive inventory for some random channel without replaypawn...?
-            if (!fortInventory.ReplayPawn.HasValue)
-            {
-                return;
-            }
+    //public void UpdateInventory(uint channelIndex, FortInventory fortInventory)
+    //{
+    //    if (!_inventories.TryGetValue(channelIndex, out var inventory))
+    //    {
+    //        // TODO updates for unknown parent inventory !?
+    //        // TODO receive inventory for some random channel without replaypawn...?
+    //        if (!fortInventory.ReplayPawn.HasValue)
+    //        {
+    //            return;
+    //        }
 
-            inventory = new Inventory()
-            {
-                Id = channelIndex,
-                ReplayPawn = fortInventory.ReplayPawn
-            };
-            _inventories[channelIndex] = inventory;
-        }
+    //        inventory = new Inventory()
+    //        {
+    //            Id = channelIndex,
+    //            ReplayPawn = fortInventory.ReplayPawn
+    //        };
+    //        _inventories[channelIndex] = inventory;
+    //    }
 
-        if (fortInventory.ReplayPawn > 0)
-        {
-            inventory.ReplayPawn = fortInventory.ReplayPawn;
-        }
+    //    if (fortInventory.ReplayPawn > 0)
+    //    {
+    //        inventory.ReplayPawn = fortInventory.ReplayPawn;
+    //    }
 
-        if (!inventory.PlayerId.HasValue)
-        {
-            if (TryGetPlayerDataFromActor(inventory.ReplayPawn.GetValueOrDefault(), out var playerData))
-            {
-                inventory.PlayerId = playerData.Id;
-                inventory.PlayerName = playerData.PlayerId;
-                //playerData.InventoryId = inventory.Id;
-            }
-        }
+    //    if (!inventory.PlayerId.HasValue)
+    //    {
+    //        if (TryGetPlayerDataFromActor(inventory.ReplayPawn.GetValueOrDefault(), out var playerData))
+    //        {
+    //            inventory.PlayerId = playerData.Id;
+    //            inventory.PlayerName = playerData.PlayerId;
+    //            //playerData.InventoryId = inventory.Id;
+    //        }
+    //    }
 
-        if (!fortInventory.A.HasValue)
-        {
-            return;
-        }
+    //    if (!fortInventory.A.HasValue)
+    //    {
+    //        return;
+    //    }
 
-        var inventoryItem = new InventoryItem()
-        {
-            Count = fortInventory.Count,
-            ItemDefinition = fortInventory.ItemDefinition?.Name,
-            OrderIndex = fortInventory.OrderIndex,
-            Durability = fortInventory.Durability,
-            Level = fortInventory.Level,
-            LoadedAmmo = fortInventory.LoadedAmmo,
-            A = fortInventory.A,
-            B = fortInventory.B,
-            C = fortInventory.C,
-            D = fortInventory.D
-        };
-        inventory.Items.Add(inventoryItem);
-    }
+    //    var inventoryItem = new InventoryItem()
+    //    {
+    //        Count = fortInventory.Count,
+    //        ItemDefinition = fortInventory.ItemDefinition?.Name,
+    //        OrderIndex = fortInventory.OrderIndex,
+    //        Durability = fortInventory.Durability,
+    //        Level = fortInventory.Level,
+    //        LoadedAmmo = fortInventory.LoadedAmmo,
+    //        A = fortInventory.A,
+    //        B = fortInventory.B,
+    //        C = fortInventory.C,
+    //        D = fortInventory.D
+    //    };
+    //    inventory.Items.Add(inventoryItem);
+    //}
 
-    public void UpdateWeapon(uint channelIndex, BaseWeapon weapon)
-    {
-        if (!_weapons.TryGetValue(channelIndex, out var newWeapon))
-        {
-            if (!_unknownWeapons.TryGetValue(channelIndex, out newWeapon))
-            {
-                newWeapon = new WeaponData();
-                _weapons[channelIndex] = newWeapon;
-            }
-            else
-            {
-                _unknownWeapons.Remove(channelIndex);
-            }
-        }
+    //public void UpdateWeapon(uint channelIndex, BaseWeapon weapon)
+    //{
+    //    if (!_weapons.TryGetValue(channelIndex, out var newWeapon))
+    //    {
+    //        if (!_unknownWeapons.TryGetValue(channelIndex, out newWeapon))
+    //        {
+    //            newWeapon = new WeaponData();
+    //            _weapons[channelIndex] = newWeapon;
+    //        }
+    //        else
+    //        {
+    //            _unknownWeapons.Remove(channelIndex);
+    //        }
+    //    }
 
-        newWeapon.bIsEquippingWeapon ??= weapon.bIsEquippingWeapon;
-        newWeapon.bIsReloadingWeapon ??= weapon.bIsReloadingWeapon;
-        newWeapon.WeaponLevel ??= weapon.WeaponLevel;
-        newWeapon.AmmoCount ??= weapon.AmmoCount;
-        newWeapon.LastFireTimeVerified ??= weapon.LastFireTimeVerified;
-        newWeapon.A ??= weapon.A;
-        newWeapon.B ??= weapon.B;
-        newWeapon.C ??= weapon.C;
-        newWeapon.D ??= weapon.D;
-        newWeapon.WeaponName ??= weapon.WeaponData?.Name;
-    }
+    //    newWeapon.bIsEquippingWeapon ??= weapon.bIsEquippingWeapon;
+    //    newWeapon.bIsReloadingWeapon ??= weapon.bIsReloadingWeapon;
+    //    newWeapon.WeaponLevel ??= weapon.WeaponLevel;
+    //    newWeapon.AmmoCount ??= weapon.AmmoCount;
+    //    newWeapon.LastFireTimeVerified ??= weapon.LastFireTimeVerified;
+    //    newWeapon.A ??= weapon.A;
+    //    newWeapon.B ??= weapon.B;
+    //    newWeapon.C ??= weapon.C;
+    //    newWeapon.D ??= weapon.D;
+    //    newWeapon.WeaponName ??= weapon.WeaponData?.Name;
+    //}
 
 
     //public void UpdateExplosion(BroadcastExplosion explosion)
