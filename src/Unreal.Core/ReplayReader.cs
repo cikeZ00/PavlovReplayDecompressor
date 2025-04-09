@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
+using System.Text;
 using Unreal.Core.Contracts;
 using Unreal.Core.Exceptions;
 using Unreal.Core.Extensions;
@@ -105,56 +107,100 @@ public abstract class ReplayReader<T> where T : Replay, new()
     /// It first parses the info section, and then all chunks.
     /// </summary>
     public virtual T ReadReplay(FArchive archive)
-    {
-        Replay = new T();
+{
+    Replay = new T();
 
-        ReadReplayInfo(archive);
-        ReadReplayChunks(archive);
-
-        Cleanup();
-
-        return Replay;
-    }
-
-    /// <summary>
-    /// Reset everything back to initial values.
-    /// Required to call after parsing a replay.
-    /// </summary>
-    protected virtual void Cleanup()
-    {
-        InReliable = 0;
-        Channels = new UChannel[DefaultMaxChannelSize];
-        IgnoringChannels = new uint?[DefaultMaxChannelSize];
-
-        replayDataIndex = 0;
-        checkpointIndex = 0;
-        packetIndex = 0;
-        bunchIndex = 0;
-        InPacketId = 0;
-        PartialBunch = null;
-
-        _netGuidCache.Cleanup();
-    }
+    ReadReplayInfo(archive);
+    ReadReplayChunks(archive);
 
 #if DEBUG
-    public virtual void Debug(string filename, string directory, ReadOnlySpan<byte> data)
-    {
-        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
-
-        File.WriteAllBytes($"{directory}/{filename}.dump", data.ToArray());
-    }
-
-    public void Debug(string filename, string line)
-    {
-        if (IsDebugMode)
-        {
-            File.AppendAllLines($"{filename}.txt", new string[1] { line });
-        }
-    }
+    DumpDebugInfo();
 #endif
+
+    Cleanup();
+
+    return Replay;
+}
+
+protected virtual void Cleanup()
+{
+    InReliable = 0;
+    Channels = new UChannel[DefaultMaxChannelSize];
+    IgnoringChannels = new uint?[DefaultMaxChannelSize];
+
+    replayDataIndex = 0;
+    checkpointIndex = 0;
+    packetIndex = 0;
+    bunchIndex = 0;
+    InPacketId = 0;
+    PartialBunch = null;
+
+    _netGuidCache.Cleanup();
+}
+
+#if DEBUG
+/// <summary>
+/// Gathers and writes detailed debug information to a text file.
+/// </summary>
+private void DumpDebugInfo()
+{
+    // Build debug info using a StringBuilder.
+    StringBuilder builder = new();
+
+    // Dump details from the NetFieldExportGroupMap.
+    foreach (var exportGroupMap in _netGuidCache.NetFieldExportGroupMap)
+    {
+        builder.AppendLine($"Path: {exportGroupMap.Key}");
+
+        foreach (var exportGroup in exportGroupMap.Value.NetFieldExports)
+        {
+            if (exportGroup == null)
+            {
+                continue;
+            }
+
+            builder.AppendLine($"\t{exportGroup.Name} - {exportGroup.Type} - {exportGroup.Handle}");
+        }
+    }
+
+    // Optionally include additional NetGUID details.
+    var netGuidDetails = string.Join("\n", _netGuidCache.NetGuidToPathName.Select(x => $"{x.Key} - {x.Value}"));
+    builder.AppendLine("Net GUID Details:");
+    builder.AppendLine(netGuidDetails);
+
+    string debugText = builder.ToString();
+
+    // Define a directory for the debug output.
+    string directory = "DebugOutput";
+    if (!Directory.Exists(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    // Write the debug text to a file.
+    string filename = Path.Combine(directory, "Debug.txt");
+    File.WriteAllText(filename, debugText);
+}
+
+public virtual void Debug(string filename, string directory, ReadOnlySpan<byte> data)
+{
+    if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    File.WriteAllBytes($"{directory}/{filename}.dump", data.ToArray());
+}
+
+public void Debug(string filename, string line)
+{
+    if (IsDebugMode)
+    {
+        File.AppendAllLines($"{filename}.txt", new string[] { line });
+    }
+}
+#endif
+
 
     /// <summary>
     /// see https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/Engine/Private/DemoNetDriver.cpp#L4892
