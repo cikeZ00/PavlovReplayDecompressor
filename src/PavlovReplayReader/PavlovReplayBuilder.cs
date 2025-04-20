@@ -4,6 +4,7 @@ using PavlovReplayReader.Models.NetFieldExports;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System;
 
 namespace PavlovReplayReader;
 
@@ -125,7 +126,26 @@ public class PavlovReplayBuilder
         GameData.BuyMenuScript ??= state.BuyMenuScript;
     }
 
+    public void UpdateKillFeed(uint channelIndex, PavlovReplayReader.Models.NetFieldExports.KillfeedEntry killfeedEntry)
+    {
+        var entry = new KillFeedEntry
+        {
+            Killer = killfeedEntry.Killer?.Value,
+            Victim = killfeedEntry.Victim?.Value,
+            DamageCauser = killfeedEntry.DamageCauser?.Name,
+            bHeadshot = killfeedEntry.bHeadshot,
+            KillerName = killfeedEntry.KillerName,
+            KillerTeamId = killfeedEntry.KillerTeamId,
+            KillerId = (uint?)killfeedEntry.KillerId,
+            VictimName = killfeedEntry.VictimName,
+            VictimTeamId = killfeedEntry.VictimTeamId,
+            VictimId = (uint?)killfeedEntry.VictimId,
+            EntryLifespan = killfeedEntry.EntryLifespan,
+            bLocalPlayer = killfeedEntry.bLocalPlayer
+        };
 
+        KillFeed.Add(entry);
+    }
 
 
     public void UpdatePrivateName(uint channelIndex, PlayerNameData playerNameData)
@@ -228,26 +248,26 @@ public class PavlovReplayBuilder
 
 
 
-    public void UpdateKillFeed(uint channelIndex, PlayerData data, GameState state)
-    {
-        var entry = new KillFeedEntry()
-        {
-            Killer = data.Instigator,
-            Victim = (uint?) data.Id,
-            DamageCauser = "placeholder",
-            bHeadshot = data.bDead ?? false,
-            KillerName = data.PlayerName,
-            KillerTeamId = data.TeamIndex,
-            KillerId = data.Instigator,
-            VictimName = data.PlayerName,
-            VictimTeamId = data.TeamIndex,
-            VictimId = (uint?) data.Id,
-            EntryLifespan = data.DeathTime ?? 0,
-            bLocalPlayer = data.bSpeaking ?? false
-        };
+    //public void UpdateKillFeed(uint channelIndex, PlayerData data, GameState state)
+    //{
+    //    var entry = new KillFeedEntry()
+    //    {
+    //        Killer = data.Instigator,
+    //        Victim = (uint?) data.Id,
+    //        DamageCauser = "placeholder",
+    //        bHeadshot = data.bDead ?? false,
+    //        KillerName = data.PlayerName,
+    //        KillerTeamId = data.TeamIndex,
+    //        KillerId = data.Instigator,
+    //        VictimName = data.PlayerName,
+    //        VictimTeamId = data.TeamIndex,
+    //        VictimId = (uint?) data.Id,
+    //        EntryLifespan = data.DeathTime ?? 0,
+    //        bLocalPlayer = data.bSpeaking ?? false
+    //    };
 
-        KillFeed.Add(entry);
-    }
+    //    KillFeed.Add(entry);
+    //}
 
 
     public void UpdatePlayerPawn(uint channelIndex, PlayerPawn pawn)
@@ -318,7 +338,6 @@ public class PavlovReplayBuilder
 
         playerState.Locations.Add(newMovement);
     }
-
 
 
 

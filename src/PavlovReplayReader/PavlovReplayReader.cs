@@ -99,16 +99,6 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
         switch (exportGroup)
         {
             case GameState state:
-                // DONE
-                // DEBUG: GameState print
-                //foreach (var property in state.GetType().GetProperties())
-                //{
-                //    var value = property.GetValue(state);
-                //    if (value != null)
-                //    {
-                //        Console.WriteLine("{0}: {1}", property.Name, value);
-                //    }
-                //}
                 Builder.UpdateGameState(state);
                 break;
 
@@ -117,23 +107,21 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
             //    break;
 
             case PavlovPlayerState state:
-                // DONE
-                // DEBUG: PlayerState print
-                //foreach (var property in state.GetType().GetProperties())
-                //{
-                //    var value = property.GetValue(state);
-                //    if (value != null)
-                //    {
-                //        Console.WriteLine("{0}: {1}", property.Name, value);
-                //    }
-                //}
-
                 Builder.UpdatePlayerState(channelIndex, state);
                 break;
 
             case PlayerPawn pawn:
                 Builder.UpdatePlayerPawn(channelIndex, pawn);
                 break;
+
+            case KillfeedEntry killfeedEntry:
+                Builder.UpdateKillFeed(channelIndex, killfeedEntry);
+                break;
+
+            //case VoiceRouter voiceRouter:
+            //    // Log every VoiceRouter instance regardless of whether ReplayOnVoiceBunch_Client is present
+            //    Console.WriteLine($"VoiceRouter detected at time {Replay.CurrentTimeSeconds}s (Total instances: {VoiceRouter.VoiceRouterInstanceCount})");
+            //    break;
 
             //case FortPickup pickup:
             //Builder.CreatePickupEvent(channelIndex, pickup);
@@ -218,7 +206,7 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
         _logger?.LogDebug("Unknown event {group} ({metadata}) of size {sizeInBytes}", info.Group, info.Metadata, info.SizeInBytes);
         if (IsDebugMode)
         {
-            throw new UnknownEventException($"Unknown event {info.Group} ({info.Metadata}) of size {info.SizeInBytes}");
+            //throw new UnknownEventException($"Unknown event {info.Group} ({info.Metadata}) of size {info.SizeInBytes}");
         }
     }
 

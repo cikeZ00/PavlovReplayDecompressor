@@ -1,5 +1,6 @@
 ﻿using PavlovReplayReader.Models.NetFieldExports;
 using System.Collections.Generic;
+using System.Linq;
 using Unreal.Core.Models;
 
 namespace PavlovReplayReader.Models;
@@ -67,9 +68,30 @@ public class PlayerData
     public int? AvatarId { get; set; }
 
     public IList<PlayerMovement> Locations { get; set; } = new List<PlayerMovement>();
+    public IList<GhostMovement> GhostLocations { get; set; } = new List<GhostMovement>();
 }
 
 public class PlayerMovement
+{
+    // Multiple location values captured from the replay:
+    public FVector? Location { get; set; }
+    public FVector? Location1 { get; set; }
+    public FVector? Location2 { get; set; }
+    public FVector? Location3 { get; set; }
+
+    // Single velocity value:
+    public FVector Velocity { get; set; }
+
+    // Heading, which is stored separately:
+    public float Heading { get; set; }
+
+    // Multiple rotation values captured from the replay:
+    public FRotator? Rotation { get; set; }
+    public FRotator? Rotation1 { get; set; }
+    public FRotator? Rotation2 { get; set; }
+}
+
+public class GhostMovement
 {
     // Multiple location values captured from the replay:
     public FVector? Location { get; set; }

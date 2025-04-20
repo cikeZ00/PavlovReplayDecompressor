@@ -364,25 +364,6 @@ namespace PavlovReplayReader.Models.NetFieldExports
 
     }
 
-    // /Game/Replay/BP_ReplayPlayerController.BP_ReplayPlayerController_C
-    [NetFieldExportGroup("/Game/Replay/BP_ReplayPlayerController.BP_ReplayPlayerController_C", minimalParseMode: ParseMode.Minimal)]
-    public class BP_ReplayPlayerController : INetFieldExportGroup
-    {
-        [NetFieldExport("RemoteRole", RepLayoutCmdType.Ignore)]
-        public object RemoteRole { get; set; }
-
-        [NetFieldExport("Role", RepLayoutCmdType.Ignore)]
-        public object Role { get; set; }
-
-        [NetFieldExport("PlayerState", RepLayoutCmdType.Ignore)]
-        public object PlayerState { get; set; }
-
-        [NetFieldExport("SpawnLocation", RepLayoutCmdType.PropertyVector)]
-        public FVector SpawnLocation { get; set; }
-
-        [NetFieldExport("VoiceRouter", RepLayoutCmdType.Ignore)]
-        public VoiceRouter VoiceRouter { get; set; }
-    }
 
     // /Game/Meshes/OfficeLevel/Props/BP_LightBlocker.BP_LightBlocker_C
     [NetFieldExportGroup("/Game/Meshes/OfficeLevel/Props/BP_LightBlocker.BP_LightBlocker_C", minimalParseMode: ParseMode.Minimal)]

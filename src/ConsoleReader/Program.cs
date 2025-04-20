@@ -11,18 +11,18 @@ using Unreal.Core.Models.Enums;
 var serviceCollection = new ServiceCollection()
     .AddLogging(loggingBuilder => loggingBuilder
         .AddConsole()
-        .SetMinimumLevel(LogLevel.Critical));
+        .SetMinimumLevel(LogLevel.Error));
 var provider = serviceCollection.BuildServiceProvider();
 var logger = provider.GetService<ILogger<Program>>();
 
-var replayFilesFolder = @"C:\Users\cikeZ00\Downloads\";
+var replayFilesFolder = @"D:\PavlovFiles\ToParse";
 var replayFiles = Directory.EnumerateFiles(replayFilesFolder, "*.replay");
 
 var sw = new Stopwatch();
 long total = 0;
 
 #if DEBUG
-var reader = new ReplayReader(logger, ParseMode.Debug);
+var reader = new ReplayReader(logger, ParseMode.Full);
 #else
 var reader = new ReplayReader(null, ParseMode.Minimal);
 #endif
@@ -42,7 +42,7 @@ foreach (var replayFile in replayFiles)
         });
 
         var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
-        File.WriteAllText(jsonFilePath, json);
+        //File.WriteAllText(jsonFilePath, json);
     }
     catch (Exception ex)
     {

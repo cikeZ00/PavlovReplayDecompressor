@@ -144,7 +144,6 @@ protected virtual void Cleanup()
 /// </summary>
 private void DumpDebugInfo()
 {
-    // Build debug info using a StringBuilder.
     StringBuilder builder = new();
 
     // Dump details from the NetFieldExportGroupMap.
