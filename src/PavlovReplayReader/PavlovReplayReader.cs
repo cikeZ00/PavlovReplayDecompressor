@@ -119,26 +119,27 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
                 Builder.UpdateKillFeed(channelIndex, killfeedEntry);
                 break;
 
-            //case VoiceRouter voiceRouter:
-            //    // Log every VoiceRouter instance regardless of whether ReplayOnVoiceBunch_Client is present
-            //    Console.WriteLine($"VoiceRouter detected at time {Replay.CurrentTimeSeconds}s (Total instances: {VoiceRouter.VoiceRouterInstanceCount})");
-            //    break;
+            case VoiceRouter voiceRouter:
+                Console.WriteLine($"VoiceRouter: {voiceRouter.Owner}");
+                Builder.ProcessVoiceRouter(channelIndex, voiceRouter);
+                break;
+
+            case ReplayOnVoiceBunch_Client voiceBunch:
+                Console.WriteLine($"ReplayOnVoiceBunch_Client: {voiceBunch.TimeSeconds}");
+                Console.WriteLine($"VoiceBunch: {voiceBunch.Packets?.Length ?? 0} packets");
+                Builder.ProcessVoiceBunch(channelIndex, voiceBunch);
+                break;
+
+            case ClientOnVoiceBunch clientVoiceBunch:
+                Console.WriteLine($"ClientOnVoiceBunch: {clientVoiceBunch.TimeSeconds}");
+                Console.WriteLine($"ClientVoiceBunch: {clientVoiceBunch.Packets?.Length ?? 0} packets");
+                Builder.ProcessClientVoiceBunch(channelIndex, clientVoiceBunch);
+                break;
 
             //case FortPickup pickup:
             //Builder.CreatePickupEvent(channelIndex, pickup);
             //break;
-            //case FortInventory inventory:
-            //    Builder.UpdateInventory(channelIndex, inventory);
-            //    break;
-            //case BroadcastExplosion explosion:
-            //    Builder.UpdateExplosion(explosion);
-            //    break;
-            //case GameplayCue gameplayCue:
-            //    Builder.UpdateGameplayCue(channelIndex, gameplayCue);
-            //    break;
-            //case BaseWeapon weapon:
-            //    Builder.UpdateWeapon(channelIndex, weapon);
-            //    break;
+            // ... other cases
         }
     }
 

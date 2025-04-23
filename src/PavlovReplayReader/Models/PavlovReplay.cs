@@ -44,4 +44,9 @@ public class PavlovReplay : Replay
     /// <summary>
     /// Map information
     /// </summary>
+
+    /// <summary>
+    /// Voice data information
+    /// </summary>
+    public IEnumerable<VoiceData> VoiceData { get; set; } = new List<VoiceData>();
 }

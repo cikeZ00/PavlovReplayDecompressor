@@ -34,6 +34,9 @@ public class PavlovReplayBuilder
     private readonly Dictionary<uint, WeaponData> _weapons = new();
     private readonly Dictionary<uint, WeaponData> _unknownWeapons = new();
 
+    private readonly Dictionary<uint, VoiceRouter> _voiceRouters = new();
+    private readonly List<VoiceData> _voiceBunches = new();
+
     private float? ReplicatedWorldTimeSeconds = 0;
     private double? ReplicatedWorldTimeSecondsDouble = 0;
 
@@ -61,6 +64,7 @@ public class PavlovReplayBuilder
         replay.KillFeed = KillFeed;
         replay.TeamData = _teams.Values;
         replay.PlayerData = _players.Values;
+        replay.VoiceData = _voiceBunches;
         return replay;
     }
 
@@ -246,31 +250,6 @@ public class PavlovReplayBuilder
         }
     }
 
-
-
-
-    //public void UpdateKillFeed(uint channelIndex, PlayerData data, GameState state)
-    //{
-    //    var entry = new KillFeedEntry()
-    //    {
-    //        Killer = data.Instigator,
-    //        Victim = (uint?) data.Id,
-    //        DamageCauser = "placeholder",
-    //        bHeadshot = data.bDead ?? false,
-    //        KillerName = data.PlayerName,
-    //        KillerTeamId = data.TeamIndex,
-    //        KillerId = data.Instigator,
-    //        VictimName = data.PlayerName,
-    //        VictimTeamId = data.TeamIndex,
-    //        VictimId = (uint?) data.Id,
-    //        EntryLifespan = data.DeathTime ?? 0,
-    //        bLocalPlayer = data.bSpeaking ?? false
-    //    };
-
-    //    KillFeed.Add(entry);
-    //}
-
-
     public void UpdatePlayerPawn(uint channelIndex, PlayerPawn pawn)
     {
         PlayerData playerState;
@@ -340,101 +319,103 @@ public class PavlovReplayBuilder
         playerState.Locations.Add(newMovement);
     }
 
+    public void ProcessVoiceRouter(uint channelIndex, VoiceRouter voiceRouter)
+    {
+        _voiceRouters[channelIndex] = voiceRouter;
+        
+        // You can add additional processing here if needed
+        // For example, tracking when a VoiceRouter is instantiated
+    }
 
+    public void ProcessVoiceBunch(uint channelIndex, ReplayOnVoiceBunch_Client voiceBunch)
+    {
+        // Process the first set of player indices and packets
+        if (voiceBunch.PlayerIndices != null && voiceBunch.Packets != null)
+        {
+            for (int i = 0; i < voiceBunch.PlayerIndices.Length; i++)
+            {
+                if (i >= voiceBunch.Packets.Length)
+                    break;
+                
+                int playerIndex = voiceBunch.PlayerIndices[i];
+                byte[] voiceData = voiceBunch.Packets[i];
+                
+                // Get player information if available
+                string playerName = "Unknown";
+                if (TryGetPlayerDataFromActor((uint)playerIndex, out var playerData) && playerData != null)
+                {
+                    playerName = playerData.PlayerName ?? playerData.PlayerId ?? "Unknown";
+                }
+                
+                _voiceBunches.Add(new VoiceData
+                {
+                    TimeSeconds = voiceBunch.TimeSeconds,
+                    PlayerIndex = playerIndex,
+                    PlayerName = playerName,
+                    Data = voiceData,
+                    IsReplay = true
+                });
+            }
+        }
+        
+        // Process the second set of player indices and packets
+        if (voiceBunch.PlayerIndices1 != null && voiceBunch.Packets1 != null)
+        {
+            for (int i = 0; i < voiceBunch.PlayerIndices1.Length; i++)
+            {
+                if (i >= voiceBunch.Packets1.Length)
+                    break;
+                
+                int playerIndex = voiceBunch.PlayerIndices1[i];
+                byte[] voiceData = voiceBunch.Packets1[i];
+                
+                // Get player information if available
+                string playerName = "Unknown";
+                if (TryGetPlayerDataFromActor((uint)playerIndex, out var playerData) && playerData != null)
+                {
+                    playerName = playerData.PlayerName ?? playerData.PlayerId ?? "Unknown";
+                }
+                
+                _voiceBunches.Add(new VoiceData
+                {
+                    TimeSeconds = voiceBunch.TimeSeconds,
+                    PlayerIndex = playerIndex,
+                    PlayerName = playerName,
+                    Data = voiceData,
+                    IsReplay = true
+                });
+            }
+        }
+    }
 
-
-
-    //public void UpdateInventory(uint channelIndex, FortInventory fortInventory)
-    //{
-    //    if (!_inventories.TryGetValue(channelIndex, out var inventory))
-    //    {
-    //        // TODO updates for unknown parent inventory !?
-    //        // TODO receive inventory for some random channel without replaypawn...?
-    //        if (!fortInventory.ReplayPawn.HasValue)
-    //        {
-    //            return;
-    //        }
-
-    //        inventory = new Inventory()
-    //        {
-    //            Id = channelIndex,
-    //            ReplayPawn = fortInventory.ReplayPawn
-    //        };
-    //        _inventories[channelIndex] = inventory;
-    //    }
-
-    //    if (fortInventory.ReplayPawn > 0)
-    //    {
-    //        inventory.ReplayPawn = fortInventory.ReplayPawn;
-    //    }
-
-    //    if (!inventory.PlayerId.HasValue)
-    //    {
-    //        if (TryGetPlayerDataFromActor(inventory.ReplayPawn.GetValueOrDefault(), out var playerData))
-    //        {
-    //            inventory.PlayerId = playerData.Id;
-    //            inventory.PlayerName = playerData.PlayerId;
-    //            //playerData.InventoryId = inventory.Id;
-    //        }
-    //    }
-
-    //    if (!fortInventory.A.HasValue)
-    //    {
-    //        return;
-    //    }
-
-    //    var inventoryItem = new InventoryItem()
-    //    {
-    //        Count = fortInventory.Count,
-    //        ItemDefinition = fortInventory.ItemDefinition?.Name,
-    //        OrderIndex = fortInventory.OrderIndex,
-    //        Durability = fortInventory.Durability,
-    //        Level = fortInventory.Level,
-    //        LoadedAmmo = fortInventory.LoadedAmmo,
-    //        A = fortInventory.A,
-    //        B = fortInventory.B,
-    //        C = fortInventory.C,
-    //        D = fortInventory.D
-    //    };
-    //    inventory.Items.Add(inventoryItem);
-    //}
-
-    //public void UpdateWeapon(uint channelIndex, BaseWeapon weapon)
-    //{
-    //    if (!_weapons.TryGetValue(channelIndex, out var newWeapon))
-    //    {
-    //        if (!_unknownWeapons.TryGetValue(channelIndex, out newWeapon))
-    //        {
-    //            newWeapon = new WeaponData();
-    //            _weapons[channelIndex] = newWeapon;
-    //        }
-    //        else
-    //        {
-    //            _unknownWeapons.Remove(channelIndex);
-    //        }
-    //    }
-
-    //    newWeapon.bIsEquippingWeapon ??= weapon.bIsEquippingWeapon;
-    //    newWeapon.bIsReloadingWeapon ??= weapon.bIsReloadingWeapon;
-    //    newWeapon.WeaponLevel ??= weapon.WeaponLevel;
-    //    newWeapon.AmmoCount ??= weapon.AmmoCount;
-    //    newWeapon.LastFireTimeVerified ??= weapon.LastFireTimeVerified;
-    //    newWeapon.A ??= weapon.A;
-    //    newWeapon.B ??= weapon.B;
-    //    newWeapon.C ??= weapon.C;
-    //    newWeapon.D ??= weapon.D;
-    //    newWeapon.WeaponName ??= weapon.WeaponData?.Name;
-    //}
-
-
-    //public void UpdateExplosion(BroadcastExplosion explosion)
-    //{
-    //    // ¯\_(ツ)_/¯
-    //}
-
-
-    //public void UpdateGameplayCue(uint channelIndex, GameplayCue gameplayCue)
-    //{
-    //    // ¯\_(ツ)_/¯
-    //}
+    public void ProcessClientVoiceBunch(uint channelIndex, ClientOnVoiceBunch voiceBunch)
+    {
+        if (voiceBunch.PlayerIndices == null || voiceBunch.Packets == null)
+            return;
+        
+        for (int i = 0; i < voiceBunch.PlayerIndices.Length; i++)
+        {
+            if (i >= voiceBunch.Packets.Length)
+                break;
+            
+            int playerIndex = voiceBunch.PlayerIndices[i];
+            byte[] voiceData = voiceBunch.Packets[i];
+            
+            // Get player information if available
+            string playerName = "Unknown";
+            if (TryGetPlayerDataFromActor((uint)playerIndex, out var playerData) && playerData != null)
+            {
+                playerName = playerData.PlayerName ?? playerData.PlayerId ?? "Unknown";
+            }
+            
+            _voiceBunches.Add(new VoiceData
+            {
+                TimeSeconds = voiceBunch.TimeSeconds,
+                PlayerIndex = playerIndex,
+                PlayerName = playerName,
+                Data = voiceData,
+                IsReplay = false
+            });
+        }
+    }
 }

@@ -35,13 +35,13 @@ foreach (var replayFile in replayFiles)
         var replay = reader.ReadReplay(replayFile);
         var gameData = replay.GameData;
 
-        var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        });
+        // var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions
+        // {
+        //     WriteIndented = true,
+        //     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        // });
 
-        var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
+        // var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
         //File.WriteAllText(jsonFilePath, json);
     }
     catch (Exception ex)
