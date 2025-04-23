@@ -1,5 +1,6 @@
 ﻿using PavlovReplayReader.Models;
 using PavlovReplayReader.Models.NetFieldExports;
+using PavlovReplayReader.Models.NetFieldExports.RPC;
 //using PavlovReplayReader.Models.NetFieldExports.Weapons;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

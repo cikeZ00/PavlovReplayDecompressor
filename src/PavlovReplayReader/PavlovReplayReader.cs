@@ -4,6 +4,7 @@ using PavlovReplayReader.Models;
 using PavlovReplayReader.Models.Enums;
 using PavlovReplayReader.Models.Events;
 using PavlovReplayReader.Models.NetFieldExports;
+using PavlovReplayReader.Models.NetFieldExports.RPC;
 //using PavlovReplayReader.Models.NetFieldExports.Weapons;
 using Microsoft.Extensions.Logging;
 using System;
