@@ -120,19 +120,19 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
                 break;
 
             case VoiceRouter voiceRouter:
-                Console.WriteLine($"VoiceRouter: {voiceRouter.Owner}");
+                //Console.WriteLine($"VoiceRouter: {voiceRouter.Owner}");
                 Builder.ProcessVoiceRouter(channelIndex, voiceRouter);
                 break;
 
             case ReplayOnVoiceBunch_Client voiceBunch:
-                Console.WriteLine($"ReplayOnVoiceBunch_Client: {voiceBunch.TimeSeconds}");
+                //Console.WriteLine($"ReplayOnVoiceBunch_Client: {voiceBunch.TimeSeconds}");
                 Console.WriteLine($"VoiceBunch: {voiceBunch.Packets?.Length ?? 0} packets");
                 Builder.ProcessVoiceBunch(channelIndex, voiceBunch);
                 break;
 
             case ClientOnVoiceBunch clientVoiceBunch:
-                Console.WriteLine($"ClientOnVoiceBunch: {clientVoiceBunch.TimeSeconds}");
-                Console.WriteLine($"ClientVoiceBunch: {clientVoiceBunch.Packets?.Length ?? 0} packets");
+                //Console.WriteLine($"ClientOnVoiceBunch: {clientVoiceBunch.TimeSeconds}");
+                //Console.WriteLine($"ClientVoiceBunch: {clientVoiceBunch.Packets?.Length ?? 0} packets");
                 Builder.ProcessClientVoiceBunch(channelIndex, clientVoiceBunch);
                 break;
 

@@ -332,13 +332,16 @@ public class PavlovReplayBuilder
         // Process the first set of player indices and packets
         if (voiceBunch.PlayerIndices != null && voiceBunch.Packets != null)
         {
+            // Parse the single byte array into separate packets for each player
+            byte[][] parsedPackets = ParseVoicePackets(voiceBunch.Packets, voiceBunch.PlayerIndices.Length);
+            
             for (int i = 0; i < voiceBunch.PlayerIndices.Length; i++)
             {
-                if (i >= voiceBunch.Packets.Length)
+                if (i >= parsedPackets.Length)
                     break;
                 
                 int playerIndex = voiceBunch.PlayerIndices[i];
-                byte[] voiceData = voiceBunch.Packets[i];
+                byte[] voiceData = parsedPackets[i];
                 
                 // Get player information if available
                 string playerName = "Unknown";
@@ -361,13 +364,16 @@ public class PavlovReplayBuilder
         // Process the second set of player indices and packets
         if (voiceBunch.PlayerIndices1 != null && voiceBunch.Packets1 != null)
         {
+            // Parse the single byte array into separate packets for each player
+            byte[][] parsedPackets1 = ParseVoicePackets(voiceBunch.Packets1, voiceBunch.PlayerIndices1.Length);
+            
             for (int i = 0; i < voiceBunch.PlayerIndices1.Length; i++)
             {
-                if (i >= voiceBunch.Packets1.Length)
+                if (i >= parsedPackets1.Length)
                     break;
                 
                 int playerIndex = voiceBunch.PlayerIndices1[i];
-                byte[] voiceData = voiceBunch.Packets1[i];
+                byte[] voiceData = parsedPackets1[i];
                 
                 // Get player information if available
                 string playerName = "Unknown";
@@ -417,5 +423,13 @@ public class PavlovReplayBuilder
                 IsReplay = false
             });
         }
+    }
+
+    // Helper method to parse the byte array
+    private byte[][] ParseVoicePackets(byte[] rawData, int expectedCount)
+    {
+        // Implementation depends on how the voice packets are encoded
+        // This is just a placeholder
+        return new byte[expectedCount][];
     }
 }

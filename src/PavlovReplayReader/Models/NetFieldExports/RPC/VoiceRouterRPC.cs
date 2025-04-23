@@ -25,11 +25,11 @@ namespace PavlovReplayReader.Models.NetFieldExports.RPC
         [NetFieldExport("Players1", RepLayoutCmdType.DynamicArray)]
         public int[] PlayerIndices1 { get; set; }
 
-        [NetFieldExport("Packets", RepLayoutCmdType.DynamicArray)]
-        public byte[][] Packets { get; set; }
-
+        [NetFieldExport("Packets",  RepLayoutCmdType.DynamicArray)]
+        public byte[] Packets { get; set; }
+        
         [NetFieldExport("Packets1", RepLayoutCmdType.DynamicArray)]
-        public byte[][] Packets1 { get; set; }
+        public byte[] Packets1 { get; set; }
 
         [NetFieldExport("TimeSeconds", RepLayoutCmdType.PropertyFloat)]
         public float TimeSeconds { get; set; }
