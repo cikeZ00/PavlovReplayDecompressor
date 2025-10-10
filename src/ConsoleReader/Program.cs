@@ -22,7 +22,7 @@ var sw = new Stopwatch();
 long total = 0;
 
 #if DEBUG
-var reader = new ReplayReader(logger, ParseMode.Full);
+var reader = new ReplayReader(logger, ParseMode.Debug);
 #else
 var reader = new ReplayReader(null, ParseMode.Minimal);
 #endif
@@ -35,14 +35,14 @@ foreach (var replayFile in replayFiles)
         var replay = reader.ReadReplay(replayFile);
         var gameData = replay.GameData;
 
-        // var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions
-        // {
-        //     WriteIndented = true,
-        //     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        // });
+        var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        });
 
-        // var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
-        //File.WriteAllText(jsonFilePath, json);
+        var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
+        File.WriteAllText(jsonFilePath, json);
     }
     catch (Exception ex)
     {
