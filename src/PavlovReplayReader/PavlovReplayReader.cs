@@ -27,14 +27,23 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
         return ReadReplay(stream);
     }
 
+    public override PavlovReplay ReadReplay(FArchive archive)
+    {
+        Builder = new PavlovReplayBuilder();
+        
+        Replay = new PavlovReplay();
+        ReadReplayInfo(archive);
+        ReadReplayChunks(archive);
+
+        Cleanup();
+        
+        return Builder.Build(Replay);
+    }
+
     public PavlovReplay ReadReplay(Stream stream)
     {
         using var archive = new Unreal.Core.BinaryReader(stream);
-
-        Builder = new PavlovReplayBuilder();
-        ReadReplay(archive);
-
-        return Builder.Build(Replay);
+        return ReadReplay(archive);
     }
 
     protected override void OnChannelOpened(uint channelIndex, NetworkGUID? actor)
@@ -54,7 +63,10 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
 
     protected override void OnExportRead(uint channelIndex, INetFieldExportGroup? exportGroup)
     {
-        // TODO: Handle export groups
+        if (exportGroup != null && Builder != null)
+        {
+            Builder.OnExportRead(channelIndex, exportGroup);
+        }
     }
 
     protected override void OnExternalDataRead(uint channelIndex, IExternalData? externalData)
@@ -65,6 +77,26 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
     public override void ReadReplayHeader(FArchive archive)
     {
         base.ReadReplayHeader(archive);
+    }
+
+    public override void ReadReplayData(FArchive archive, int fallbackChunkSize)
+    {
+        base.ReadReplayData(archive, fallbackChunkSize);
+    }
+
+    public override void ReadDemoFrameIntoPlaybackPackets(FArchive archive)
+    {
+        base.ReadDemoFrameIntoPlaybackPackets(archive);
+    }
+
+    public override void ReadExportData(FArchive archive)
+    {
+        base.ReadExportData(archive);
+    }
+
+    public override void ReadNetFieldExports(FArchive archive)
+    {
+        base.ReadNetFieldExports(archive);
     }
 
     public override void ReadEvent(FArchive archive)

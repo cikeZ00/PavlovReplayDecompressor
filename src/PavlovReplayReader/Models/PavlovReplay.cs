@@ -1,4 +1,5 @@
-﻿using Unreal.Core.Models;
+﻿using System.Collections.Generic;
+using Unreal.Core.Models;
 
 namespace PavlovReplayReader.Models;
 
@@ -8,16 +9,21 @@ namespace PavlovReplayReader.Models;
 public class PavlovReplay : Replay
 {
     /// <summary>
-    /// Generic game data parsed from the replay.
-    /// This is a placeholder object that will be populated as parsing is implemented.
+    /// Game state data parsed from the replay.
+    /// Contains information about match settings, scores, rules, and configuration.
     /// </summary>
-    public object? GameData { get; set; }
+    public GameData? GameData { get; set; }
+
+    /// <summary>
+    /// Player state data for all players in the match.
+    /// Contains stats, equipment, settings, and state for each player.
+    /// </summary>
+    public List<PlayerData>? Players { get; set; }
 
     // TODO: Add additional parsed replay data properties as needed
     // Examples:
-    // - Player data
-    // - Team data
-    // - Kill feed
-    // - Events
-    // - Voice data
+    // - Team data (IEnumerable<TeamData>)
+    // - Kill feed (IList<KillFeedEntry>)
+    // - Events (IList<GameEvent>)
+    // - Voice data (IEnumerable<VoiceData>)
 }

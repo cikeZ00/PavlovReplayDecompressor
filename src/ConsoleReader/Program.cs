@@ -33,8 +33,45 @@ foreach (var replayFile in replayFiles)
     try
     {
         var replay = reader.ReadReplay(replayFile);
-        var gameData = replay.GameData;
-
+        
+        // Display replay header information
+        Console.WriteLine($"\n=== Replay: {Path.GetFileName(replayFile)} ===");
+        Console.WriteLine($"Network Version: {replay.Header?.NetworkVersion}");
+        Console.WriteLine($"Changelist: {replay.Header?.Changelist}");
+        Console.WriteLine($"Branch: {replay.Header?.Branch}");
+        Console.WriteLine($"Platform: {replay.Header?.Platform}");
+        
+        // Display game data information
+        if (replay.GameData != null)
+        {
+            Console.WriteLine("\n--- Game Data ---");
+            Console.WriteLine($"Game Mode: {replay.GameData.GameModeType}");
+            Console.WriteLine($"Match State: {replay.GameData.MatchState}");
+            Console.WriteLine($"Round Time: {replay.GameData.RoundTime}");
+            Console.WriteLine($"Team 0 Score: {replay.GameData.Team0Score}");
+            Console.WriteLine($"Team 1 Score: {replay.GameData.Team1Score}");
+            Console.WriteLine($"Max Players: {replay.GameData.MaxPlayers}");
+            Console.WriteLine($"Competitive Mode: {replay.GameData.CompetitiveMode}");
+            Console.WriteLine($"No Teams: {replay.GameData.bNoTeams}");
+        }
+        
+        // Display player information
+        if (replay.Players != null && replay.Players.Count > 0)
+        {
+            Console.WriteLine($"\n--- Players ({replay.Players.Count}) ---");
+            foreach (var player in replay.Players)
+            {
+                Console.WriteLine($"  [{player.TeamId}] {player.PlayerName} (ID: {player.PlayerId})");
+                Console.WriteLine($"      K/D/A: {player.Kills}/{player.Deaths}/{player.Assists}");
+                Console.WriteLine($"      Cash: {player.Cash} | Score: {player.Score} | Dead: {player.bDead}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("\n--- No Players Found ---");
+        }
+        
+        // Serialize to JSON for detailed inspection
         var json = JsonSerializer.Serialize(replay, new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -43,13 +80,16 @@ foreach (var replayFile in replayFiles)
 
         var jsonFilePath = Path.Combine(replayFilesFolder, Path.GetFileNameWithoutExtension(replayFile) + ".json");
         File.WriteAllText(jsonFilePath, json);
+        
+        Console.WriteLine($"\nJSON saved to: {jsonFilePath}");
     }
     catch (Exception ex)
     {
+        Console.WriteLine($"\nERROR processing {Path.GetFileName(replayFile)}:");
         Console.WriteLine(ex);
     }
     sw.Stop();
-    Console.WriteLine($"---- {replayFile} : done in {sw.ElapsedMilliseconds} milliseconds ----");
+    Console.WriteLine($"\n---- Completed in {sw.ElapsedMilliseconds}ms ----");
     total += sw.ElapsedMilliseconds;
 }
 
