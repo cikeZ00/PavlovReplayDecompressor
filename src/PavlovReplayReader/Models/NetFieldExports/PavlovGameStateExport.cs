@@ -68,10 +68,28 @@ public class PavlovGameStateExport : INetFieldExportGroup
     #region Team Data
 
     /// <summary>
-    /// Gets or sets team 1 data (handle 31). Ignored - complex struct.
+    /// Gets or sets team 0 player array (handle 28). 
+    /// This property is replicated but contains complex actor references that don't parse correctly as simple uint arrays.
+    /// The actual team assignments are tracked via TeamId on each PavlovPlayerState instead.
+    /// </summary>
+    [NetFieldExport("Team0", RepLayoutCmdType.Ignore)]
+    public object? Team0 { get; set; }
+
+    /// <summary>
+    /// Gets or sets team 1 player array (handle 31).
+    /// This property is replicated but contains complex actor references that don't parse correctly as simple uint arrays.
+    /// The actual team assignments are tracked via TeamId on each PavlovPlayerState instead.
     /// </summary>
     [NetFieldExport("Team1", RepLayoutCmdType.Ignore)]
     public object? Team1 { get; set; }
+
+    /// <summary>
+    /// Gets or sets team 2 player array.
+    /// This property is replicated but contains complex actor references that don't parse correctly as simple uint arrays.
+    /// The actual team assignments are tracked via TeamId on each PavlovPlayerState instead.
+    /// </summary>
+    [NetFieldExport("Team2", RepLayoutCmdType.Ignore)]
+    public object? Team2 { get; set; }
 
     #endregion
 

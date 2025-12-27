@@ -2,7 +2,6 @@ using Unreal.Core.Attributes;
 using Unreal.Core.Contracts;
 using Unreal.Core.Models;
 using Unreal.Core.Models.Enums;
-using PavlovReplayReader.Models.Enums;
 
 namespace PavlovReplayReader.Models.NetFieldExports;
 
@@ -11,8 +10,21 @@ namespace PavlovReplayReader.Models.NetFieldExports;
 /// Contains bomb state for S&amp;D game mode.
 /// </summary>
 [NetFieldExportGroup("/Game/Gameplay/SearchAndDestroy/Bomb/Bomb.Bomb_C", minimalParseMode: ParseMode.Minimal)]
-public class BombExport : INetFieldExportGroup
+public class BombExport : BombExportBase { }
+
+/// <summary>
+/// NetFieldExportGroup for basic bomb variant.
+/// </summary>
+[NetFieldExportGroup("/Game/Gameplay/SearchAndDestroy/Bomb/Bomb_Basic.Bomb_Basic_C", minimalParseMode: ParseMode.Minimal)]
+public class BombBasicExport : BombExportBase { }
+
+/// <summary>
+/// Base class for bomb exports with all properties.
+/// </summary>
+public class BombExportBase : INetFieldExportGroup
 {
+    #region Actor Base Properties
+
     /// <summary>
     /// Gets or sets whether the bomb is hidden.
     /// </summary>
@@ -20,16 +32,22 @@ public class BombExport : INetFieldExportGroup
     public bool? bHidden { get; set; }
 
     /// <summary>
+    /// Gets or sets whether movement replication is enabled.
+    /// </summary>
+    [NetFieldExport("bReplicateMovement", RepLayoutCmdType.PropertyBool)]
+    public bool? bReplicateMovement { get; set; }
+
+    /// <summary>
     /// Gets or sets the remote role.
     /// </summary>
     [NetFieldExport("RemoteRole", RepLayoutCmdType.Ignore)]
-    public int? RemoteRole { get; set; }
+    public object? RemoteRole { get; set; }
 
     /// <summary>
     /// Gets or sets the role.
     /// </summary>
     [NetFieldExport("Role", RepLayoutCmdType.Ignore)]
-    public int? Role { get; set; }
+    public object? Role { get; set; }
 
     /// <summary>
     /// Gets or sets the owner reference.
@@ -49,6 +67,50 @@ public class BombExport : INetFieldExportGroup
     [NetFieldExport("ReplicatedMovement", RepLayoutCmdType.RepMovement)]
     public FRepMovement? ReplicatedMovement { get; set; }
 
+    #endregion
+
+    #region Attachment Replication (FRepAttachment)
+
+    /// <summary>
+    /// Gets or sets the attach parent actor.
+    /// </summary>
+    [NetFieldExport("AttachParent", RepLayoutCmdType.PropertyObject)]
+    public uint? AttachParent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attach socket name.
+    /// </summary>
+    [NetFieldExport("AttachSocket", RepLayoutCmdType.PropertyName)]
+    public string? AttachSocket { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attach component.
+    /// </summary>
+    [NetFieldExport("AttachComponent", RepLayoutCmdType.PropertyObject)]
+    public uint? AttachComponent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the location offset for attachment.
+    /// </summary>
+    [NetFieldExport("LocationOffset", RepLayoutCmdType.PropertyVector100)]
+    public FVector? LocationOffset { get; set; }
+
+    /// <summary>
+    /// Gets or sets the relative scale for attachment.
+    /// </summary>
+    [NetFieldExport("RelativeScale3D", RepLayoutCmdType.PropertyVector100)]
+    public FVector? RelativeScale3D { get; set; }
+
+    /// <summary>
+    /// Gets or sets the rotation offset for attachment.
+    /// </summary>
+    [NetFieldExport("RotationOffset", RepLayoutCmdType.PropertyRotator)]
+    public FRotator? RotationOffset { get; set; }
+
+    #endregion
+
+    #region VRItem Properties
+
     /// <summary>
     /// Gets or sets whether the bomb is torn off.
     /// </summary>
@@ -56,10 +118,50 @@ public class BombExport : INetFieldExportGroup
     public bool? bTearOff { get; set; }
 
     /// <summary>
+    /// Gets or sets whether picking up is disabled.
+    /// </summary>
+    [NetFieldExport("bPickDisabled", RepLayoutCmdType.PropertyBool)]
+    public bool? bPickDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the controller holding this item.
+    /// </summary>
+    [NetFieldExport("Controller", RepLayoutCmdType.PropertyObject)]
+    public uint? Controller { get; set; }
+
+    /// <summary>
+    /// Gets or sets the parent item.
+    /// </summary>
+    [NetFieldExport("Parent", RepLayoutCmdType.PropertyObject)]
+    public uint? Parent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the parent attachment slot.
+    /// </summary>
+    [NetFieldExport("ParentSlot", RepLayoutCmdType.PropertyByte)]
+    public byte? ParentSlot { get; set; }
+
+    #endregion
+
+    #region Bomb Properties
+
+    /// <summary>
     /// Gets or sets the current bomb state.
+    /// </summary>
+    [NetFieldExport("State", RepLayoutCmdType.Enum)]
+    public int? State { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current bomb state (alternative name).
     /// </summary>
     [NetFieldExport("BombState", RepLayoutCmdType.Enum)]
     public int? BombState { get; set; }
+
+    /// <summary>
+    /// Gets or sets the bomb timer value.
+    /// </summary>
+    [NetFieldExport("Timer", RepLayoutCmdType.PropertyFloat)]
+    public float? Timer { get; set; }
 
     /// <summary>
     /// Gets or sets the time remaining on the bomb.
@@ -80,89 +182,158 @@ public class BombExport : INetFieldExportGroup
     public bool? bDefusing { get; set; }
 
     /// <summary>
-    /// Gets or sets the attach parent.
+    /// Gets or sets the bomb defuse code.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_AttachParent", RepLayoutCmdType.PropertyObject)]
-    public uint? AttachmentReplication_AttachParent { get; set; }
+    [NetFieldExport("Code", RepLayoutCmdType.PropertyString)]
+    public string? Code { get; set; }
 
     /// <summary>
-    /// Gets or sets the attach socket.
+    /// Gets or sets the next digit to enter in the defuse code.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_AttachSocket", RepLayoutCmdType.Property)]
-    public string? AttachmentReplication_AttachSocket { get; set; }
+    [NetFieldExport("NextDigit", RepLayoutCmdType.PropertyInt)]
+    public int? NextDigit { get; set; }
 
     /// <summary>
-    /// Gets or sets the attach component.
+    /// Gets or sets the wire states for defusing.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_AttachComponent", RepLayoutCmdType.PropertyObject)]
-    public uint? AttachmentReplication_AttachComponent { get; set; }
+    [NetFieldExport("WireStates", RepLayoutCmdType.Ignore)]
+    public object? WireStates { get; set; }
 
-    /// <summary>
-    /// Gets or sets the location offset.
-    /// </summary>
-    [NetFieldExport("AttachmentReplication_LocationOffset", RepLayoutCmdType.PropertyVector)]
-    public FVector? AttachmentReplication_LocationOffset { get; set; }
-
-    /// <summary>
-    /// Gets or sets the rotation offset.
-    /// </summary>
-    [NetFieldExport("AttachmentReplication_RotationOffset", RepLayoutCmdType.PropertyRotator)]
-    public FRotator? AttachmentReplication_RotationOffset { get; set; }
+    #endregion
 }
 
 /// <summary>
 /// NetFieldExportGroup for bomb plant spot.
 /// Contains bomb site information for S&amp;D mode.
-/// Property handles from Debug.txt: 1: bHidden, 4: RemoteRole, 11: ReplicatedMovement, 13: Role, 21: bSpotEnabled
 /// </summary>
 [NetFieldExportGroup("/Game/Gameplay/SearchAndDestroy/Bomb/BombPlantSpot_Basic.BombPlantSpot_Basic_C", minimalParseMode: ParseMode.Minimal)]
 public class BombPlantSpotExport : INetFieldExportGroup
 {
     /// <summary>
-    /// Gets or sets whether the bomb spot is hidden (handle 1).
+    /// Gets or sets whether the bomb spot is hidden.
     /// </summary>
     [NetFieldExport("bHidden", RepLayoutCmdType.PropertyBool)]
     public bool? bHidden { get; set; }
 
     /// <summary>
-    /// Gets or sets the remote role (handle 4). Ignored.
+    /// Gets or sets the remote role.
     /// </summary>
     [NetFieldExport("RemoteRole", RepLayoutCmdType.Ignore)]
-    public int? RemoteRole { get; set; }
+    public object? RemoteRole { get; set; }
 
     /// <summary>
-    /// Gets or sets the role (handle 13). Ignored.
+    /// Gets or sets the role.
     /// </summary>
     [NetFieldExport("Role", RepLayoutCmdType.Ignore)]
-    public int? Role { get; set; }
+    public object? Role { get; set; }
 
     /// <summary>
-    /// Gets or sets the replicated movement (handle 11).
+    /// Gets or sets the replicated movement.
     /// </summary>
     [NetFieldExport("ReplicatedMovement", RepLayoutCmdType.RepMovement)]
     public FRepMovement? ReplicatedMovement { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this spot is enabled (handle 21).
+    /// Gets or sets whether this spot is enabled.
     /// </summary>
     [NetFieldExport("bSpotEnabled", RepLayoutCmdType.PropertyBool)]
     public bool? bSpotEnabled { get; set; }
+}
+
+/// <summary>
+/// NetFieldExportGroup for defuse pliers.
+/// Used for bomb defusal in S&amp;D mode.
+/// </summary>
+[NetFieldExportGroup("/Game/Gameplay/SearchAndDestroy/Pliers/Pliers_Basic.Pliers_Basic_C", minimalParseMode: ParseMode.Minimal)]
+public class PliersExport : INetFieldExportGroup
+{
+    #region Actor Base Properties
 
     /// <summary>
-    /// Gets or sets whether the bomb is planted at this spot.
+    /// Gets or sets whether movement replication is enabled.
     /// </summary>
-    [NetFieldExport("bBombPlanted", RepLayoutCmdType.PropertyBool)]
-    public bool? bBombPlanted { get; set; }
+    [NetFieldExport("bReplicateMovement", RepLayoutCmdType.PropertyBool)]
+    public bool? bReplicateMovement { get; set; }
 
     /// <summary>
-    /// Gets or sets whether this spot is active.
+    /// Gets or sets the remote role.
     /// </summary>
-    [NetFieldExport("bActive", RepLayoutCmdType.PropertyBool)]
-    public bool? bActive { get; set; }
+    [NetFieldExport("RemoteRole", RepLayoutCmdType.Ignore)]
+    public object? RemoteRole { get; set; }
 
     /// <summary>
-    /// Gets or sets the bomb site identifier (A, B, etc).
+    /// Gets or sets the role.
     /// </summary>
-    [NetFieldExport("SiteId", RepLayoutCmdType.PropertyByte)]
-    public byte? SiteId { get; set; }
+    [NetFieldExport("Role", RepLayoutCmdType.Ignore)]
+    public object? Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the owner reference.
+    /// </summary>
+    [NetFieldExport("Owner", RepLayoutCmdType.PropertyObject)]
+    public uint? Owner { get; set; }
+
+    /// <summary>
+    /// Gets or sets the replicated movement.
+    /// </summary>
+    [NetFieldExport("ReplicatedMovement", RepLayoutCmdType.RepMovement)]
+    public FRepMovement? ReplicatedMovement { get; set; }
+
+    #endregion
+
+    #region Attachment Replication
+
+    /// <summary>
+    /// Gets or sets the attach parent actor.
+    /// </summary>
+    [NetFieldExport("AttachParent", RepLayoutCmdType.PropertyObject)]
+    public uint? AttachParent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attach socket name.
+    /// </summary>
+    [NetFieldExport("AttachSocket", RepLayoutCmdType.PropertyName)]
+    public string? AttachSocket { get; set; }
+
+    /// <summary>
+    /// Gets or sets the attach component.
+    /// </summary>
+    [NetFieldExport("AttachComponent", RepLayoutCmdType.PropertyObject)]
+    public uint? AttachComponent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the relative scale for attachment.
+    /// </summary>
+    [NetFieldExport("RelativeScale3D", RepLayoutCmdType.PropertyVector100)]
+    public FVector? RelativeScale3D { get; set; }
+
+    #endregion
+
+    #region VRItem Properties
+
+    /// <summary>
+    /// Gets or sets whether picking up is disabled.
+    /// </summary>
+    [NetFieldExport("bPickDisabled", RepLayoutCmdType.PropertyBool)]
+    public bool? bPickDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the controller holding this item.
+    /// </summary>
+    [NetFieldExport("Controller", RepLayoutCmdType.PropertyObject)]
+    public uint? Controller { get; set; }
+
+    /// <summary>
+    /// Gets or sets the parent item.
+    /// </summary>
+    [NetFieldExport("Parent", RepLayoutCmdType.PropertyObject)]
+    public uint? Parent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the parent attachment slot.
+    /// </summary>
+    [NetFieldExport("ParentSlot", RepLayoutCmdType.PropertyByte)]
+    public byte? ParentSlot { get; set; }
+
+    #endregion
 }

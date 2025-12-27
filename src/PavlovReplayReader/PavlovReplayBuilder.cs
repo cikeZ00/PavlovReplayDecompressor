@@ -160,12 +160,6 @@ public class PavlovReplayBuilder
             case VRLauncherExport launcher:
                 HandleLauncher(channelIndex, launcher);
                 break;
-            case VRC4Export c4:
-                HandleC4(channelIndex, c4);
-                break;
-            case VRDoorBombExport doorBomb:
-                HandleDoorBomb(channelIndex, doorBomb);
-                break;
             
             // Vehicles
             case PavlovVehicleExport vehicle:
@@ -245,6 +239,9 @@ public class PavlovReplayBuilder
         
         // Get current time for events (use frame-based time if MatchTime not available)
         var currentTime = GetCurrentTime();
+        
+        // Note: Team0/Team1/Team2 player arrays are ignored - they contain object references
+        // that can't be properly parsed. Team assignments are tracked via TeamId on each PlayerState.
         
         // Team scores - track changes for timeline
         if (export.Team0Score.HasValue) 
@@ -581,34 +578,34 @@ public class PavlovReplayBuilder
         
         // Common properties
         UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator, 
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent, 
-            export.AttachmentReplication_AttachSocket);
+            export.bHidden, export.bTearOff, export.AttachParent, 
+            export.AttachSocket);
     }
 
     private void HandleMagazine(uint channelIndex, MagazineExport export)
     {
         var weapon = GetOrCreateWeapon(channelIndex, "Magazine");
         
-        if (export.Ammo.HasValue) weapon.Ammo = export.Ammo;
-        if (export.MaxAmmo.HasValue) weapon.MaxAmmo = export.MaxAmmo;
+        if (export.Bullets.HasValue) weapon.Ammo = export.Bullets;
+        if (export.MaxBullets.HasValue) weapon.MaxAmmo = export.MaxBullets;
         
         UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator,
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent,
-            export.AttachmentReplication_AttachSocket);
+            export.bHidden, export.bTearOff, export.AttachParent,
+            export.AttachSocket);
     }
 
     private void HandleGrenade(uint channelIndex, VRGrenadeExport export)
     {
         var weapon = GetOrCreateWeapon(channelIndex, "VRGrenade");
         
-        if (export.GrenadeState.HasValue) weapon.GrenadeState = export.GrenadeState;
+        if (export.State.HasValue) weapon.GrenadeState = export.State;
         if (export.GrenadeType.HasValue) weapon.GrenadeType = export.GrenadeType;
         if (export.CookTime.HasValue) weapon.CookTime = export.CookTime;
         if (export.FuseTime.HasValue) weapon.FuseTime = export.FuseTime;
         
         UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator,
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent,
-            export.AttachmentReplication_AttachSocket);
+            export.bHidden, export.bTearOff, export.AttachParent,
+            export.AttachSocket);
     }
 
     private void HandleKnife(uint channelIndex, VRKnifeExport export)
@@ -618,45 +615,20 @@ public class PavlovReplayBuilder
         if (export.SkinId.HasValue) weapon.SkinId = export.SkinId;
         
         UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator,
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent,
-            export.AttachmentReplication_AttachSocket);
+            export.bHidden, export.bTearOff, export.AttachParent,
+            export.AttachSocket);
     }
 
     private void HandleLauncher(uint channelIndex, VRLauncherExport export)
     {
         var weapon = GetOrCreateWeapon(channelIndex, "VRLauncher");
         
-        if (export.LauncherState.HasValue) weapon.LauncherState = export.LauncherState;
+        // VRLauncher has bCocked but no state enum
         if (export.Ammo.HasValue) weapon.Ammo = export.Ammo;
         
         UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator,
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent,
-            export.AttachmentReplication_AttachSocket);
-    }
-
-    private void HandleC4(uint channelIndex, VRC4Export export)
-    {
-        var weapon = GetOrCreateWeapon(channelIndex, "VRC4");
-        
-        if (export.bArmed.HasValue) weapon.IsArmed = export.bArmed;
-        if (export.bPlanted.HasValue) weapon.IsPlanted = export.bPlanted;
-        if (export.Timer.HasValue) weapon.Timer = export.Timer;
-        
-        UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator,
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent,
-            export.AttachmentReplication_AttachSocket);
-    }
-
-    private void HandleDoorBomb(uint channelIndex, VRDoorBombExport export)
-    {
-        var weapon = GetOrCreateWeapon(channelIndex, "VRDoorBomb");
-        
-        if (export.bArmed.HasValue) weapon.IsArmed = export.bArmed;
-        if (export.bPlanted.HasValue) weapon.IsPlanted = export.bPlanted;
-        
-        UpdateWeaponCommon(weapon, export.ReplicatedMovement, export.Owner, export.Instigator,
-            export.bHidden, export.bTearOff, export.AttachmentReplication_AttachParent,
-            export.AttachmentReplication_AttachSocket);
+            export.bHidden, export.bTearOff, export.AttachParent,
+            export.AttachSocket);
     }
 
     private WeaponData GetOrCreateWeapon(uint channelIndex, string weaponType)
@@ -764,15 +736,17 @@ public class PavlovReplayBuilder
         _bomb ??= new BombData { ChannelIndex = channelIndex };
         _bomb.LastUpdateTime = _lastWorldTime;
         
+        // BombState and State can both be set - prefer BombState if available
         if (export.BombState.HasValue) _bomb.BombState = export.BombState;
+        else if (export.State.HasValue) _bomb.BombState = export.State;
         if (export.BombTime.HasValue) _bomb.BombTime = export.BombTime;
         if (export.DefuseProgress.HasValue) _bomb.DefuseProgress = export.DefuseProgress;
         if (export.bDefusing.HasValue) _bomb.IsDefusing = export.bDefusing;
         if (export.ReplicatedMovement != null) _bomb.ReplicatedMovement = export.ReplicatedMovement;
         if (export.Owner.HasValue) _bomb.OwnerRef = export.Owner;
         if (export.bHidden.HasValue) _bomb.IsHidden = export.bHidden;
-        if (export.AttachmentReplication_AttachParent.HasValue) 
-            _bomb.AttachParentRef = export.AttachmentReplication_AttachParent;
+        if (export.AttachParent.HasValue) 
+            _bomb.AttachParentRef = export.AttachParent;
     }
 
     private void HandleBombSite(uint channelIndex, BombPlantSpotExport export)
@@ -785,9 +759,7 @@ public class PavlovReplayBuilder
         }
         site.LastUpdateTime = _lastWorldTime;
         
-        if (export.SiteId.HasValue) site.SiteId = export.SiteId;
-        if (export.bBombPlanted.HasValue) site.BombPlanted = export.bBombPlanted;
-        if (export.bActive.HasValue) site.IsActive = export.bActive;
+        if (export.bSpotEnabled.HasValue) site.IsActive = export.bSpotEnabled;
         if (export.ReplicatedMovement != null) site.ReplicatedMovement = export.ReplicatedMovement;
     }
 

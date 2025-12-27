@@ -206,30 +206,36 @@ public class CTFFlagExport : INetFieldExportGroup
     /// <summary>
     /// Gets or sets the attach parent.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_AttachParent", RepLayoutCmdType.PropertyObject)]
-    public uint? AttachmentReplication_AttachParent { get; set; }
+    [NetFieldExport("AttachParent", RepLayoutCmdType.PropertyObject)]
+    public uint? AttachParent { get; set; }
 
     /// <summary>
     /// Gets or sets the attach socket.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_AttachSocket", RepLayoutCmdType.Property)]
-    public string? AttachmentReplication_AttachSocket { get; set; }
+    [NetFieldExport("AttachSocket", RepLayoutCmdType.PropertyName)]
+    public string? AttachSocket { get; set; }
 
     /// <summary>
     /// Gets or sets the attach component.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_AttachComponent", RepLayoutCmdType.PropertyObject)]
-    public uint? AttachmentReplication_AttachComponent { get; set; }
+    [NetFieldExport("AttachComponent", RepLayoutCmdType.PropertyObject)]
+    public uint? AttachComponent { get; set; }
 
     /// <summary>
     /// Gets or sets the location offset.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_LocationOffset", RepLayoutCmdType.PropertyVector)]
-    public FVector? AttachmentReplication_LocationOffset { get; set; }
+    [NetFieldExport("LocationOffset", RepLayoutCmdType.PropertyVector100)]
+    public FVector? LocationOffset { get; set; }
+
+    /// <summary>
+    /// Gets or sets the relative scale for attachment.
+    /// </summary>
+    [NetFieldExport("RelativeScale3D", RepLayoutCmdType.PropertyVector100)]
+    public FVector? RelativeScale3D { get; set; }
 
     /// <summary>
     /// Gets or sets the rotation offset.
     /// </summary>
-    [NetFieldExport("AttachmentReplication_RotationOffset", RepLayoutCmdType.PropertyRotator)]
-    public FRotator? AttachmentReplication_RotationOffset { get; set; }
+    [NetFieldExport("RotationOffset", RepLayoutCmdType.PropertyRotator)]
+    public FRotator? RotationOffset { get; set; }
 }
