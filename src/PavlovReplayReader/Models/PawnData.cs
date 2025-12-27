@@ -164,6 +164,41 @@ public class PawnData
     /// </summary>
     public bool? IsHidden { get; set; }
 
+    /// <summary>
+    /// Whether the player is invulnerable.
+    /// </summary>
+    public bool? IsInvulnerable { get; set; }
+
+    /// <summary>
+    /// Player flags byte.
+    /// </summary>
+    public byte? Flags { get; set; }
+
+    /// <summary>
+    /// Body armour value.
+    /// </summary>
+    public int? Armour { get; set; }
+
+    /// <summary>
+    /// Helmet armour value.
+    /// </summary>
+    public int? HelmetArmour { get; set; }
+
+    /// <summary>
+    /// Radio channel the player is on.
+    /// </summary>
+    public byte? RadioChannel { get; set; }
+
+    /// <summary>
+    /// Whether the left hand is supported/gripping.
+    /// </summary>
+    public bool? LeftSupported { get; set; }
+
+    /// <summary>
+    /// Whether the right hand is supported/gripping.
+    /// </summary>
+    public bool? RightSupported { get; set; }
+
     #endregion
 
     #region References

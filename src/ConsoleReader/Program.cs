@@ -32,7 +32,7 @@ var jsonOptions = new JsonSerializerOptions
 #if DEBUG
 var reader = new ReplayReader(logger, ParseMode.Debug);
 #else
-var reader = new ReplayReader(null, ParseMode.Minimal);
+var reader = new ReplayReader(null, ParseMode.Debug);
 #endif
 
 // Enable timeline recording for time-series data

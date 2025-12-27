@@ -93,64 +93,67 @@ public class PavlovPawnExport : INetFieldExportGroup
 
     /// <summary>
     /// Gets or sets the player location (handle 45, fallback position).
-    /// Note: Pavlov primarily uses Location1/Location2/Location3 for VR tracking.
+    /// Note: Pavlov primarily uses Location (handles 49,51,53) for VR tracking.
     /// </summary>
-    [NetFieldExport("Location", RepLayoutCmdType.Ignore)]
+    [NetFieldExportHandle(45, RepLayoutCmdType.Ignore)]
     public FVector? Location { get; set; }
 
     /// <summary>
     /// Gets or sets the player velocity (handle 46).
     /// </summary>
-    [NetFieldExport("Velocity", RepLayoutCmdType.Ignore)]
+    [NetFieldExportHandle(46, RepLayoutCmdType.Ignore)]
     public FVector? Velocity { get; set; }
 
     /// <summary>
     /// Gets or sets the player heading/yaw rotation (handle 47).
     /// </summary>
-    [NetFieldExport("Heading", RepLayoutCmdType.PropertyFloat)]
+    [NetFieldExportHandle(47, RepLayoutCmdType.PropertyFloat)]
     public float? Heading { get; set; }
 
     /// <summary>
     /// Gets or sets the player flags (handle 48).
     /// </summary>
-    [NetFieldExport("Flags", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(48, RepLayoutCmdType.PropertyByte)]
     public byte? Flags { get; set; }
 
     /// <summary>
-    /// Gets or sets the player/head location (handle 49, Location1 from VR tracking).
+    /// Gets or sets the player/head location (handle 49, first "Location" from VR tracking).
     /// This is the main position of the player in the world.
+    /// Note: Uses handle-based binding since replay uses same name "Location" for multiple properties.
     /// </summary>
-    [NetFieldExport("Location1", RepLayoutCmdType.PropertyVector)]
+    [NetFieldExportHandle(49, RepLayoutCmdType.PropertyVector)]
     public FVector? Location1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the head/body rotation (handle 50).
+    /// Gets or sets the head/body rotation (handle 50, first "Rotation" from VR tracking).
     /// </summary>
-    [NetFieldExport("Rotation", RepLayoutCmdType.PropertyRotator)]
+    [NetFieldExportHandle(50, RepLayoutCmdType.PropertyRotator)]
     public FRotator? Rotation { get; set; }
 
     /// <summary>
-    /// Gets or sets the left hand location (handle 51, Location2 from VR tracking).
+    /// Gets or sets the left hand location (handle 51, second "Location" from VR tracking).
+    /// Note: Uses handle-based binding since replay uses same name "Location" for multiple properties.
     /// </summary>
-    [NetFieldExport("Location2", RepLayoutCmdType.PropertyVector)]
+    [NetFieldExportHandle(51, RepLayoutCmdType.PropertyVector)]
     public FVector? Location2 { get; set; }
 
     /// <summary>
-    /// Gets or sets the left hand rotation (handle 52, Rotation1 from VR tracking).
+    /// Gets or sets the left hand rotation (handle 52, second "Rotation" from VR tracking).
     /// </summary>
-    [NetFieldExport("Rotation1", RepLayoutCmdType.PropertyRotator)]
+    [NetFieldExportHandle(52, RepLayoutCmdType.PropertyRotator)]
     public FRotator? Rotation1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the right hand location (handle 53, Location3 from VR tracking).
+    /// Gets or sets the right hand location (handle 53, third "Location" from VR tracking).
+    /// Note: Uses handle-based binding since replay uses same name "Location" for multiple properties.
     /// </summary>
-    [NetFieldExport("Location3", RepLayoutCmdType.PropertyVector)]
+    [NetFieldExportHandle(53, RepLayoutCmdType.PropertyVector)]
     public FVector? Location3 { get; set; }
 
     /// <summary>
-    /// Gets or sets the right hand rotation (handle 54, Rotation2 from VR tracking).
+    /// Gets or sets the right hand rotation (handle 54, third "Rotation" from VR tracking).
     /// </summary>
-    [NetFieldExport("Rotation2", RepLayoutCmdType.PropertyRotator)]
+    [NetFieldExportHandle(54, RepLayoutCmdType.PropertyRotator)]
     public FRotator? Rotation2 { get; set; }
 
     #endregion
@@ -197,34 +200,37 @@ public class PavlovPawnExport : INetFieldExportGroup
 
     /// <summary>
     /// Gets or sets the left index finger bend value (handle 58).
-    /// Note: Property name in replay is "Index", mapped to LeftIndex for clarity.
+    /// Note: Property name in replay is "Index" - uses handle-based binding since right hand also uses "Index".
     /// </summary>
-    [NetFieldExport("Index", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(58, RepLayoutCmdType.PropertyByte)]
     public byte? LeftIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the left middle finger bend value (handle 59).
-    /// Note: Property name in replay is "Midle" (typo), mapped to LeftMiddle.
+    /// Note: Property name in replay is "Midle" (typo) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Midle", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(59, RepLayoutCmdType.PropertyByte)]
     public byte? LeftMiddle { get; set; }
 
     /// <summary>
     /// Gets or sets the left ring finger bend value (handle 60).
+    /// Note: Uses handle-based binding since right hand also uses "Ring".
     /// </summary>
-    [NetFieldExport("Ring", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(60, RepLayoutCmdType.PropertyByte)]
     public byte? LeftRing { get; set; }
 
     /// <summary>
     /// Gets or sets the left pinky finger bend value (handle 61).
+    /// Note: Uses handle-based binding since right hand also uses "Pinky".
     /// </summary>
-    [NetFieldExport("Pinky", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(61, RepLayoutCmdType.PropertyByte)]
     public byte? LeftPinky { get; set; }
 
     /// <summary>
     /// Gets or sets the left thumb bend value (handle 62).
+    /// Note: Uses handle-based binding since right hand also uses "Thumb".
     /// </summary>
-    [NetFieldExport("Thumb", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(62, RepLayoutCmdType.PropertyByte)]
     public byte? LeftThumb { get; set; }
 
     #endregion
@@ -233,34 +239,37 @@ public class PavlovPawnExport : INetFieldExportGroup
 
     /// <summary>
     /// Gets or sets the right index finger bend value (handle 63).
-    /// Note: Property name in replay is "Index1", mapped to RightIndex for clarity.
+    /// Note: Property name in replay is "Index" (same as left hand) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Index1", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(63, RepLayoutCmdType.PropertyByte)]
     public byte? RightIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the right middle finger bend value (handle 64).
-    /// Note: Property name in replay is "Midle1" (typo), mapped to RightMiddle.
+    /// Note: Property name in replay is "Midle" (typo, same as left hand) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Midle1", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(64, RepLayoutCmdType.PropertyByte)]
     public byte? RightMiddle { get; set; }
 
     /// <summary>
     /// Gets or sets the right ring finger bend value (handle 65).
+    /// Note: Property name in replay is "Ring" (same as left hand) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Ring1", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(65, RepLayoutCmdType.PropertyByte)]
     public byte? RightRing { get; set; }
 
     /// <summary>
     /// Gets or sets the right pinky finger bend value (handle 66).
+    /// Note: Property name in replay is "Pinky" (same as left hand) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Pinky1", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(66, RepLayoutCmdType.PropertyByte)]
     public byte? RightPinky { get; set; }
 
     /// <summary>
     /// Gets or sets the right thumb bend value (handle 67).
+    /// Note: Property name in replay is "Thumb" (same as left hand) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Thumb1", RepLayoutCmdType.PropertyByte)]
+    [NetFieldExportHandle(67, RepLayoutCmdType.PropertyByte)]
     public byte? RightThumb { get; set; }
 
     #endregion
@@ -269,14 +278,16 @@ public class PavlovPawnExport : INetFieldExportGroup
 
     /// <summary>
     /// Gets or sets whether the left hand is supported/gripping (handle 68).
+    /// Note: Property name in replay is "Supported" - uses handle-based binding since right hand also uses "Supported".
     /// </summary>
-    [NetFieldExport("Supported", RepLayoutCmdType.PropertyBool)]
+    [NetFieldExportHandle(68, RepLayoutCmdType.PropertyBool)]
     public bool? LeftSupported { get; set; }
 
     /// <summary>
     /// Gets or sets whether the right hand is supported/gripping (handle 69).
+    /// Note: Property name in replay is "Supported" (same as left hand) - uses handle-based binding.
     /// </summary>
-    [NetFieldExport("Supported1", RepLayoutCmdType.PropertyBool)]
+    [NetFieldExportHandle(69, RepLayoutCmdType.PropertyBool)]
     public bool? RightSupported { get; set; }
 
     #endregion

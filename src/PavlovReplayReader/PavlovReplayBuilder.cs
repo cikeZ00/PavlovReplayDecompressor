@@ -439,6 +439,13 @@ public class PavlovReplayBuilder
         if (export.bIsTalking.HasValue) pawn.IsTalking = export.bIsTalking;
         if (export.bParachuting.HasValue) pawn.IsParachuting = export.bParachuting;
         if (export.bHidden.HasValue) pawn.IsHidden = export.bHidden;
+        if (export.bInvulnerable.HasValue) pawn.IsInvulnerable = export.bInvulnerable;
+        if (export.Flags.HasValue) pawn.Flags = export.Flags;
+        if (export.Armour.HasValue) pawn.Armour = export.Armour;
+        if (export.HelmetArmour.HasValue) pawn.HelmetArmour = export.HelmetArmour;
+        if (export.RadioChannel.HasValue) pawn.RadioChannel = export.RadioChannel;
+        if (export.LeftSupported.HasValue) pawn.LeftSupported = export.LeftSupported;
+        if (export.RightSupported.HasValue) pawn.RightSupported = export.RightSupported;
         
         // References - store raw network GUIDs
         if (export.PlayerState.HasValue) pawn.PlayerStateRef = export.PlayerState;
