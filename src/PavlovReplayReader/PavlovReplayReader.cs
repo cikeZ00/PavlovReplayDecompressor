@@ -15,6 +15,19 @@ namespace PavlovReplayReader;
 public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
 {
     private PavlovReplayBuilder? Builder;
+    private string? _currentFileName;
+    
+    /// <summary>
+    /// Whether to record timeline data (position snapshots over time).
+    /// Set to true before calling ReadReplay to capture timeline data.
+    /// </summary>
+    public bool RecordTimeline { get; set; } = false;
+    
+    /// <summary>
+    /// Minimum time interval between timeline snapshots in seconds.
+    /// Default is 0.1 seconds (10 snapshots per second).
+    /// </summary>
+    public float SnapshotInterval { get; set; } = 0.1f;
 
     public ReplayReader(ILogger? logger = null, ParseMode parseMode = ParseMode.Minimal) 
         : base(logger ?? NullLogger.Instance, parseMode)
@@ -23,13 +36,18 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
 
     public PavlovReplay ReadReplay(string fileName)
     {
+        _currentFileName = Path.GetFileName(fileName);
         using var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return ReadReplay(stream);
     }
 
     public override PavlovReplay ReadReplay(FArchive archive)
     {
-        Builder = new PavlovReplayBuilder();
+        Builder = new PavlovReplayBuilder
+        {
+            RecordTimeline = RecordTimeline,
+            SnapshotInterval = SnapshotInterval
+        };
         
         Replay = new PavlovReplay();
         ReadReplayInfo(archive);
@@ -38,6 +56,15 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
         Cleanup();
         
         return Builder.Build(Replay);
+    }
+    
+    /// <summary>
+    /// Gets the timeline data after reading a replay.
+    /// Must have set RecordTimeline = true before reading.
+    /// </summary>
+    public ReplayTimeline? GetTimeline()
+    {
+        return Builder?.BuildTimeline(_currentFileName);
     }
 
     public PavlovReplay ReadReplay(Stream stream)
@@ -48,12 +75,20 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
 
     protected override void OnChannelOpened(uint channelIndex, NetworkGUID? actor)
     {
-        // TODO: Track channel to actor mapping
+        // Track network GUID to channel index mapping for resolving PropertyObject references
+        if (actor?.Value != null && Builder != null)
+        {
+            Builder.OnChannelOpened(channelIndex, actor.Value);
+        }
     }
 
     protected override void OnChannelClosed(uint channelIndex, NetworkGUID? actor)
     {
-        // TODO: Clean up channel tracking
+        // Clean up channel tracking - note: we keep the mapping as it may still be referenced
+        if (actor?.Value != null && Builder != null)
+        {
+            Builder.OnChannelClosed(channelIndex, actor.Value);
+        }
     }
 
     protected override void OnNetDeltaRead(uint channelIndex, NetDeltaUpdate update)
