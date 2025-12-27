@@ -85,9 +85,9 @@ public class PawnTimeline
     public ulong? PlayerId { get; set; }
 
     /// <summary>
-    /// Team ID.
+    /// Team ID (0 or 1 for teams).
     /// </summary>
-    public byte? TeamId { get; set; }
+    public int? TeamId { get; set; }
 
     /// <summary>
     /// Time of first snapshot in seconds.

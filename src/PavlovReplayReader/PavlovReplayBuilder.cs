@@ -1091,7 +1091,7 @@ public class PavlovReplayBuilder
                         : null;
                     // Also update TeamId from player if pawn didn't have it
                     if (pt.TeamId == null)
-                        pt.TeamId = (byte)player.TeamId;
+                        pt.TeamId = player.TeamId;
                 }
             }
             

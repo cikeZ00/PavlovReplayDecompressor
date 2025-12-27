@@ -130,9 +130,9 @@ public class PawnData
     #region Avatar and State
 
     /// <summary>
-    /// Team ID this pawn belongs to.
+    /// Team ID this pawn belongs to (0 or 1 for teams).
     /// </summary>
-    public byte? TeamId { get; set; }
+    public int? TeamId { get; set; }
 
     /// <summary>
     /// Avatar/skin ID.

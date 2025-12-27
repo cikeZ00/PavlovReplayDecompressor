@@ -58,4 +58,10 @@ public class VHealthComponentExport : INetFieldExportGroup
     /// </summary>
     [NetFieldExport("RelativeScale3D", RepLayoutCmdType.PropertyVector)]
     public Unreal.Core.Models.FVector? RelativeScale3D { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the entity is dead (handle 3).
+    /// </summary>
+    [NetFieldExport("bDead", RepLayoutCmdType.PropertyBool)]
+    public bool? bDead { get; set; }
 }

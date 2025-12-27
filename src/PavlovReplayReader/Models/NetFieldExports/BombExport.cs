@@ -113,27 +113,40 @@ public class BombExport : INetFieldExportGroup
 /// <summary>
 /// NetFieldExportGroup for bomb plant spot.
 /// Contains bomb site information for S&amp;D mode.
+/// Property handles from Debug.txt: 1: bHidden, 4: RemoteRole, 11: ReplicatedMovement, 13: Role, 21: bSpotEnabled
 /// </summary>
 [NetFieldExportGroup("/Game/Gameplay/SearchAndDestroy/Bomb/BombPlantSpot_Basic.BombPlantSpot_Basic_C", minimalParseMode: ParseMode.Minimal)]
 public class BombPlantSpotExport : INetFieldExportGroup
 {
     /// <summary>
-    /// Gets or sets whether the bomb spot is hidden.
+    /// Gets or sets whether the bomb spot is hidden (handle 1).
     /// </summary>
     [NetFieldExport("bHidden", RepLayoutCmdType.PropertyBool)]
     public bool? bHidden { get; set; }
 
     /// <summary>
-    /// Gets or sets the remote role.
+    /// Gets or sets the remote role (handle 4). Ignored.
     /// </summary>
     [NetFieldExport("RemoteRole", RepLayoutCmdType.Ignore)]
     public int? RemoteRole { get; set; }
 
     /// <summary>
-    /// Gets or sets the role.
+    /// Gets or sets the role (handle 13). Ignored.
     /// </summary>
     [NetFieldExport("Role", RepLayoutCmdType.Ignore)]
     public int? Role { get; set; }
+
+    /// <summary>
+    /// Gets or sets the replicated movement (handle 11).
+    /// </summary>
+    [NetFieldExport("ReplicatedMovement", RepLayoutCmdType.RepMovement)]
+    public FRepMovement? ReplicatedMovement { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this spot is enabled (handle 21).
+    /// </summary>
+    [NetFieldExport("bSpotEnabled", RepLayoutCmdType.PropertyBool)]
+    public bool? bSpotEnabled { get; set; }
 
     /// <summary>
     /// Gets or sets whether the bomb is planted at this spot.
@@ -152,10 +165,4 @@ public class BombPlantSpotExport : INetFieldExportGroup
     /// </summary>
     [NetFieldExport("SiteId", RepLayoutCmdType.PropertyByte)]
     public byte? SiteId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the replicated movement.
-    /// </summary>
-    [NetFieldExport("ReplicatedMovement", RepLayoutCmdType.RepMovement)]
-    public FRepMovement? ReplicatedMovement { get; set; }
 }

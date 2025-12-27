@@ -8,10 +8,23 @@ namespace PavlovReplayReader.Models.NetFieldExports;
 /// <summary>
 /// NetFieldExportGroup for Voice Router.
 /// Handles voice communication routing between players.
+/// Property handles from Debug.txt: 4: RemoteRole, 12: Owner, 13: Role
 /// </summary>
 [NetFieldExportGroup("/Script/Pavlov.VoiceRouter", minimalParseMode: ParseMode.Minimal)]
 public class VoiceRouterExport : INetFieldExportGroup
 {
+    /// <summary>
+    /// Gets or sets the remote role (handle 4). Ignored.
+    /// </summary>
+    [NetFieldExport("RemoteRole", RepLayoutCmdType.Ignore)]
+    public int? RemoteRole { get; set; }
+
+    /// <summary>
+    /// Gets or sets the role (handle 13). Ignored.
+    /// </summary>
+    [NetFieldExport("Role", RepLayoutCmdType.Ignore)]
+    public int? Role { get; set; }
+
     /// <summary>
     /// Gets or sets whether the voice router is active.
     /// </summary>
@@ -19,7 +32,7 @@ public class VoiceRouterExport : INetFieldExportGroup
     public bool? bIsActive { get; set; }
 
     /// <summary>
-    /// Gets or sets the owner reference.
+    /// Gets or sets the owner reference (handle 12).
     /// </summary>
     [NetFieldExport("Owner", RepLayoutCmdType.PropertyObject)]
     public uint? Owner { get; set; }
