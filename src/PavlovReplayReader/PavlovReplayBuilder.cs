@@ -997,6 +997,29 @@ public class PavlovReplayBuilder
         if (_healthComponents.Count > 0)
             replay.HealthComponents = new Dictionary<uint, HealthData>(_healthComponents);
         
+        // Calculate duration - use MatchTime if available, otherwise calculate from snapshots
+        float? replayDuration = null;
+        if (_lastWorldTime > 0)
+        {
+            replayDuration = _lastWorldTime;
+        }
+        else
+        {
+            // Fall back to snapshot-based duration
+            float maxSnapshotTime = 0;
+            foreach (var pt in _pawnTimelines.Values)
+            {
+                if (pt.Snapshots.Count > 0)
+                {
+                    var lastTime = pt.Snapshots[^1].Time;
+                    if (lastTime > maxSnapshotTime)
+                        maxSnapshotTime = lastTime;
+                }
+            }
+            if (maxSnapshotTime > 0)
+                replayDuration = maxSnapshotTime;
+        }
+        
         // Statistics
         replay.Stats = new ReplayStats
         {
@@ -1004,7 +1027,7 @@ public class PavlovReplayBuilder
             UniqueExportTypes = _exportTypeCounts.Count,
             ExportTypeCounts = new Dictionary<string, int>(_exportTypeCounts),
             MaxChannelIndex = _maxChannelIndex,
-            ReplayDuration = _lastWorldTime > 0 ? _lastWorldTime : null
+            ReplayDuration = replayDuration
         };
         
         return replay;

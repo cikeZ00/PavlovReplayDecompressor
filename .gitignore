@@ -505,3 +505,4 @@ healthchecksdb
 oodle/*
 /src/PavlovDump
 /PavlovDump
+src/ConsoleReader/not-reading-groups.txt
