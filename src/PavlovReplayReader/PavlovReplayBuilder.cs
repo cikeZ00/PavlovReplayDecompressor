@@ -390,7 +390,8 @@ public class PavlovReplayBuilder
         
         pawn.LastUpdateTime = _lastWorldTime;
         
-        // VR Tracking positions - Location1 is head/body, Location2 is left hand, Location3 is right hand
+        // VR Tracking positions - Location1/2/3 are the actual tracked positions in Pavlov
+        // In Pavlov VR, these ARE the world positions for head and hands
         if (export.Location1 is not null) pawn.Location = export.Location1;
         if (export.Location2 is not null) pawn.LeftHandLocation = export.Location2;
         if (export.Location3 is not null) pawn.RightHandLocation = export.Location3;
@@ -400,20 +401,9 @@ public class PavlovReplayBuilder
         if (export.Rotation1 is not null) pawn.LeftHandRotation = export.Rotation1;
         if (export.Rotation2 is not null) pawn.RightHandRotation = export.Rotation2;
         
-        // Fallback to ReplicatedMovement if Location1 isn't available
-        if (export.ReplicatedMovement is { } repMovement)
-        {
-            pawn.ReplicatedMovement = repMovement;
-            // Only use ReplicatedMovement.Location if we don't have Location1
-            if (pawn.Location is null && repMovement.Location is not null) 
-                pawn.Location = repMovement.Location;
-            if (repMovement.LinearVelocity is not null) 
-                pawn.Velocity = repMovement.LinearVelocity;
-        }
-        
-        // Legacy Location/Velocity properties (ignored but keep for compatibility)
+        // Legacy Location/Velocity properties (fallback if nothing else available)
         if (export.Location is not null && pawn.Location is null) pawn.Location = export.Location;
-        if (export.Velocity is not null) pawn.Velocity = export.Velocity;
+        if (export.Velocity is not null && pawn.Velocity is null) pawn.Velocity = export.Velocity;
         if (export.Heading.HasValue) pawn.Heading = export.Heading;
         
         // Controllers - these are actor references (network GUIDs), not positions
@@ -466,10 +456,14 @@ public class PavlovReplayBuilder
             // Get last snapshot frame for this pawn (default to -1000 to ensure first snapshot is recorded)
             _lastSnapshotFrame.TryGetValue(channelIndex, out var lastFrame);
             if (lastFrame == 0) lastFrame = -1000;  // Ensure first record
-            
+
+            // Always record the first valid position for each pawn
+            var isFirstSnapshot = !_pawnTimelines.ContainsKey(channelIndex) ||
+                                 _pawnTimelines[channelIndex].Snapshots.Count == 0;
+
             // Record every N frames (approximately, SnapshotInterval * 100 frames per second estimate)
             var frameInterval = Math.Max(1, (int)(SnapshotInterval * 100));
-            if (_frameCounter - lastFrame >= frameInterval)
+            if (isFirstSnapshot || _frameCounter - lastFrame >= frameInterval)
             {
                 RecordPawnSnapshot(channelIndex, pawn);
                 _lastSnapshotFrame[channelIndex] = _frameCounter;
@@ -488,11 +482,20 @@ public class PavlovReplayBuilder
         // Update timeline metadata
         if (pawn.TeamId.HasValue) timeline.TeamId = pawn.TeamId;
         
-        // Create and add snapshot
+        // Check if player is dead by looking up the linked player
+        bool isDead = false;
+        if (pawn.ResolvedPlayerChannel.HasValue && _players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+        {
+            isDead = player.bDead;
+        }
+        
+        // Create snapshot
+        var loc = pawn.Location;
+        var isFirstSnapshot = timeline.Snapshots.Count == 0;
         var snapshot = new PawnSnapshot
         {
-            Time = _lastWorldTime > 0 ? _lastWorldTime : _frameCounter / 100f,  // Fallback to frame-based time
-            Location = pawn.Location is { } loc ? new FVector(loc.X, loc.Y, loc.Z) : null,
+            Time = isFirstSnapshot ? 0f : (_lastWorldTime > 0 ? _lastWorldTime : _frameCounter / 100f),  // First snapshot at time 0
+            Location = loc is not null ? new FVector(loc.X, loc.Y, loc.Z) : null,
             LeftHandLocation = pawn.LeftHandLocation is { } lh ? new FVector(lh.X, lh.Y, lh.Z) : null,
             RightHandLocation = pawn.RightHandLocation is { } rh ? new FVector(rh.X, rh.Y, rh.Z) : null,
             Velocity = pawn.Velocity is { } vel ? new FVector(vel.X, vel.Y, vel.Z) : null,
@@ -501,8 +504,36 @@ public class PavlovReplayBuilder
             RightHandRotation = pawn.RightHandRotation,
             Heading = pawn.Heading,
             HeadRot = pawn.HeadRot,
-            GazeDir = pawn.GazeDir
+            GazeDir = pawn.GazeDir,
+            // Mark position as invalid if Z is unreasonable (< 50cm or > 500cm for head height)
+            IsPositionValid = loc is null || (loc.Z >= 50 && loc.Z <= 500),
+            IsDead = isDead
         };
+        
+        // Detect jittery/corrupt tracking data by checking velocity against recent snapshots
+        // If we have at least 2 previous snapshots, check for unrealistic speed
+        if (loc is not null && snapshot.IsPositionValid && timeline.Snapshots.Count >= 1)
+        {
+            var prevSnap = timeline.Snapshots[^1];
+            if (prevSnap.Location is not null && prevSnap.IsPositionValid)
+            {
+                var dt = snapshot.Time - prevSnap.Time;
+                if (dt > 0 && dt < 1.0f) // Only check for nearby snapshots
+                {
+                    var dx = loc.X - prevSnap.Location.X;
+                    var dy = loc.Y - prevSnap.Location.Y;
+                    var dist = Math.Sqrt(dx * dx + dy * dy);
+                    var speed = dist / dt;
+                    
+                    // VR movement speeds: walking ~2-5 units/s, running ~10-20, sprinting ~20-50
+                    // Speed > 200 units/s indicates corrupt tracking data or teleportation
+                    if (speed > 200)
+                    {
+                        snapshot.IsPositionValid = false;
+                    }
+                }
+            }
+        }
         
         timeline.Snapshots.Add(snapshot);
     }

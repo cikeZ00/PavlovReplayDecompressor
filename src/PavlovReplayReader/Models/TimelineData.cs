@@ -62,6 +62,16 @@ public class PawnSnapshot
     /// Gaze direction.
     /// </summary>
     public FVector? GazeDir { get; set; }
+
+    /// <summary>
+    /// Whether this position data appears valid (Z height in reasonable range).
+    /// </summary>
+    public bool IsPositionValid { get; set; } = true;
+
+    /// <summary>
+    /// Whether the player is dead at this snapshot time.
+    /// </summary>
+    public bool IsDead { get; set; }
 }
 
 /// <summary>
