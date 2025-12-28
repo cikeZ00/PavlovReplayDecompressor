@@ -18,7 +18,9 @@ public class PavlovReplayBuilder
     private int _totalExportsProcessed = 0;
     private uint _maxChannelIndex = 0;
     private float _lastWorldTime = 0;
-    private int _frameCounter = 0;  // Fallback timing when MatchTime not available
+    private float _firstWorldTime = 0;  // Track first ReplicatedWorldTimeSeconds to calculate actual duration
+    private bool _hasFirstWorldTime = false;  // Track if we've seen the first world time
+    private int _frameCounter = 0;  // Frame counter for snapshot interval tracking
     private readonly Dictionary<uint, int> _lastSnapshotFrame = new();  // Per-pawn snapshot tracking
     
     /// <summary>
@@ -221,10 +223,17 @@ public class PavlovReplayBuilder
     {
         _gameData ??= new GameData();
         
-        // Track world time using MatchTime as the primary time source
-        if (export.MatchTime.HasValue)
+        // Track world time using ReplicatedWorldTimeSeconds (continuous world time)
+        // ReplicatedWorldTimeSeconds is the actual continuous world time from the start of the replay
+        if (export.ReplicatedWorldTimeSeconds.HasValue)
         {
-            _lastWorldTime = export.MatchTime.Value;
+            var worldTime = export.ReplicatedWorldTimeSeconds.Value;
+            if (!_hasFirstWorldTime)
+            {
+                _firstWorldTime = worldTime;
+                _hasFirstWorldTime = true;
+            }
+            _lastWorldTime = worldTime;
         }
         
         // Match state and timing
@@ -237,7 +246,7 @@ public class PavlovReplayBuilder
         if (export.bMatchTimePaused.HasValue) _gameData.bMatchTimePaused = export.bMatchTimePaused;
         if (export.MatchTime.HasValue) _gameData.MatchTime = export.MatchTime;
         
-        // Get current time for events (use frame-based time if MatchTime not available)
+        // Get current relative time for events
         var currentTime = GetCurrentTime();
         
         // Note: Team0/Team1/Team2 player arrays are ignored - they contain object references
@@ -311,11 +320,11 @@ public class PavlovReplayBuilder
     }
     
     /// <summary>
-    /// Gets the current time, using MatchTime if available or falling back to frame-based time.
+    /// Gets the current relative time (elapsed time from replay start).
     /// </summary>
     private float GetCurrentTime()
     {
-        return _lastWorldTime > 0 ? _lastWorldTime : _frameCounter / 100f;
+        return _hasFirstWorldTime ? _lastWorldTime - _firstWorldTime : 0f;
     }
 
     #endregion
@@ -492,9 +501,11 @@ public class PavlovReplayBuilder
         // Create snapshot
         var loc = pawn.Location;
         var isFirstSnapshot = timeline.Snapshots.Count == 0;
+        // Calculate relative time: subtract first world time to get elapsed time from replay start
+        float snapshotTime = isFirstSnapshot ? 0f : (_hasFirstWorldTime ? _lastWorldTime - _firstWorldTime : 0f);
         var snapshot = new PawnSnapshot
         {
-            Time = isFirstSnapshot ? 0f : (_lastWorldTime > 0 ? _lastWorldTime : _frameCounter / 100f),  // First snapshot at time 0
+            Time = snapshotTime,  // First snapshot at time 0, subsequent snapshots use relative time
             Location = loc is not null ? new FVector(loc.X, loc.Y, loc.Z) : null,
             LeftHandLocation = pawn.LeftHandLocation is { } lh ? new FVector(lh.X, lh.Y, lh.Z) : null,
             RightHandLocation = pawn.RightHandLocation is { } rh ? new FVector(rh.X, rh.Y, rh.Z) : null,
@@ -1028,27 +1039,12 @@ public class PavlovReplayBuilder
         if (_healthComponents.Count > 0)
             replay.HealthComponents = new Dictionary<uint, HealthData>(_healthComponents);
         
-        // Calculate duration - use MatchTime if available, otherwise calculate from snapshots
+        // Calculate duration using ReplicatedWorldTimeSeconds difference
+        // This gives us the actual elapsed time from first to last world time update
         float? replayDuration = null;
-        if (_lastWorldTime > 0)
+        if (_hasFirstWorldTime && _lastWorldTime > _firstWorldTime)
         {
-            replayDuration = _lastWorldTime;
-        }
-        else
-        {
-            // Fall back to snapshot-based duration
-            float maxSnapshotTime = 0;
-            foreach (var pt in _pawnTimelines.Values)
-            {
-                if (pt.Snapshots.Count > 0)
-                {
-                    var lastTime = pt.Snapshots[^1].Time;
-                    if (lastTime > maxSnapshotTime)
-                        maxSnapshotTime = lastTime;
-                }
-            }
-            if (maxSnapshotTime > 0)
-                replayDuration = maxSnapshotTime;
+            replayDuration = _lastWorldTime - _firstWorldTime;
         }
         
         // Statistics
@@ -1070,20 +1066,10 @@ public class PavlovReplayBuilder
     /// </summary>
     public ReplayTimeline BuildTimeline(string? fileName = null)
     {
-        // Calculate actual duration from the last snapshot time across all pawns
-        float maxSnapshotTime = 0;
-        foreach (var pt in _pawnTimelines.Values)
-        {
-            if (pt.Snapshots.Count > 0)
-            {
-                var lastTime = pt.Snapshots[^1].Time;
-                if (lastTime > maxSnapshotTime)
-                    maxSnapshotTime = lastTime;
-            }
-        }
-        
-        // Use snapshot-based duration if _lastWorldTime isn't set
-        var duration = _lastWorldTime > 0 ? _lastWorldTime : maxSnapshotTime;
+        // Calculate duration using ReplicatedWorldTimeSeconds difference
+        float duration = (_hasFirstWorldTime && _lastWorldTime > _firstWorldTime) 
+            ? _lastWorldTime - _firstWorldTime 
+            : 0f;
         
         var timeline = new ReplayTimeline
         {

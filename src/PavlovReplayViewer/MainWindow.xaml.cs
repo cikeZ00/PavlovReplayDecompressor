@@ -93,7 +93,11 @@ public partial class MainWindow : Window
             
             // Game info
             GameModeText.Text = $"Mode: {_replay.GameData?.GameModeType?.ToString() ?? "Unknown"}";
-            DurationText.Text = $"Duration: {FormatTime(_replay.Stats?.ReplayDuration ?? 0)}";
+            // Use timeline duration as fallback if stats duration is not available
+            var duration = _replay.Stats?.ReplayDuration ?? 
+                          (_timeline.Duration > 0 ? _timeline.Duration : 
+                           (_timeline.PawnTimelines?.SelectMany(p => p.Snapshots).MaxBy(s => s.Time)?.Time ?? 0));
+            DurationText.Text = $"Duration: {FormatTime(duration)}";
             MapText.Text = $"Map: {_replay.GameData?.ModId ?? "Unknown"}";
             Team0ScoreText.Text = (_replay.GameData?.Team0Score ?? 0).ToString();
             Team1ScoreText.Text = (_replay.GameData?.Team1Score ?? 0).ToString();
