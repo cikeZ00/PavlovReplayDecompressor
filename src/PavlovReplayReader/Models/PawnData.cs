@@ -60,11 +60,6 @@ public class PawnData
     /// </summary>
     public float? Heading { get; set; }
 
-    /// <summary>
-    /// Full replicated movement data.
-    /// </summary>
-    public FRepMovement? ReplicatedMovement { get; set; }
-
     #endregion
 
     #region VR Controller Tracking

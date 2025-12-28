@@ -85,13 +85,6 @@ public class PavlovPawnExport : INetFieldExportGroup
     #region Position and Movement
 
     /// <summary>
-    /// Gets or sets the replicated movement data.
-    /// Contains Location, Rotation, LinearVelocity, and AngularVelocity.
-    /// </summary>
-    [NetFieldExport("ReplicatedMovement", RepLayoutCmdType.RepMovement)]
-    public FRepMovement? ReplicatedMovement { get; set; }
-
-    /// <summary>
     /// Gets or sets the player location (handle 45, fallback position).
     /// Note: Pavlov primarily uses Location (handles 49,51,53) for VR tracking.
     /// </summary>
