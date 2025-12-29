@@ -85,9 +85,7 @@ public class PavlovPawnExport : INetFieldExportGroup
     #region Position and Movement
 
     /// <summary>
-    /// Gets or sets the player location (handle 45, fallback position).
-    /// Note: Pavlov primarily uses Location (handles 49,51,53) for VR tracking.
-    /// It's possible this is the starting position for the pawn.
+    /// Gets or sets the player location (handle 45).
     /// </summary>
     [NetFieldExportHandle(45, RepLayoutCmdType.PropertyVector)]
     public FVector? Location { get; set; }
@@ -111,9 +109,7 @@ public class PavlovPawnExport : INetFieldExportGroup
     public byte? Flags { get; set; }
 
     /// <summary>
-    /// Gets or sets the player/head location (handle 49, first "Location" from VR tracking).
-    /// This is the main position of the player in the world.
-    /// Note: Uses handle-based binding since replay uses same name "Location" for multiple properties.
+    /// Gets or sets the head location (handle 49, first "Location" from VR tracking).
     /// </summary>
     [NetFieldExportHandle(49, RepLayoutCmdType.PropertyVector)]
     public FVector? Location1 { get; set; }

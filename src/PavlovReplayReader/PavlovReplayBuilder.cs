@@ -411,8 +411,8 @@ public class PavlovReplayBuilder
         if (export.Rotation2 is not null) pawn.RightHandRotation = export.Rotation2;
         
         // World Location/Velocity properties
-        if (export.Location is not null && pawn.Location is null) pawn.Location = export.Location;
-        if (export.Velocity is not null && pawn.Velocity is null) pawn.Velocity = export.Velocity;
+        if (export.Location is not null) pawn.Location = export.Location;
+        if (export.Velocity is not null) pawn.Velocity = export.Velocity;
         if (export.Heading.HasValue) pawn.Heading = export.Heading;
         
         // Controllers - these are actor references (network GUIDs), not positions
