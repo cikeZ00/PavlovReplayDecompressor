@@ -74,6 +74,9 @@ public class PavlovGlobalInfoExport : INetFieldExportGroup
 {
     [NetFieldExport("GameLogic", RepLayoutCmdType.PropertyObject)]
     public uint? GameLogic { get; set; }
+
+    [NetFieldExport("bDisableVoting", RepLayoutCmdType.PropertyBool)]
+    public bool? bDisableVoting { get; set; }
 }
 
 /// <summary>

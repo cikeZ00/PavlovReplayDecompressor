@@ -259,6 +259,12 @@ public class PavlovGameStateExport : INetFieldExportGroup
     [NetFieldExport("GlobalInfo", RepLayoutCmdType.PropertyObject)]
     public uint? GlobalInfo { get; set; }
 
+    /// <summary>
+    /// Gets or sets the mod initializers. Ignored.
+    /// </summary>
+    [NetFieldExport("ModInitializers", RepLayoutCmdType.Ignore)]
+    public object? ModInitializers { get; set; }
+
     #endregion
 }
 

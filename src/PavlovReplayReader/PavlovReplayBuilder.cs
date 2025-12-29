@@ -383,6 +383,7 @@ public class PavlovReplayBuilder
         if (export.DeadTime.HasValue) player.DeadTime = export.DeadTime.Value;
         if (export.bSpawnGhost.HasValue) player.bSpawnGhost = export.bSpawnGhost.Value;
         if (export.bHasPlayerProxy.HasValue) player.bHasPlayerProxy = export.bHasPlayerProxy.Value;
+        if (export.CompressedPing.HasValue) player.CompressedPing = export.CompressedPing.Value;
     }
 
     #endregion

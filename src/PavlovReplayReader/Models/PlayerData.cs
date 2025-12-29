@@ -63,7 +63,6 @@ public class PlayerData
 
     // Score (inherited from PlayerState)
     public float Score { get; set; }
-    public int Ping { get; set; }
-    public int StartTime { get; set; }
-}
+    public int CompressedPing { get; set; }
+    }
 

@@ -87,7 +87,7 @@ public class PavlovPawnExport : INetFieldExportGroup
     /// <summary>
     /// Gets or sets the player location (handle 45, fallback position).
     /// Note: Pavlov primarily uses Location (handles 49,51,53) for VR tracking.
-    /// This might be wrong
+    /// It's possible this is the starting position for the pawn.
     /// </summary>
     [NetFieldExportHandle(45, RepLayoutCmdType.PropertyVector)]
     public FVector? Location { get; set; }
@@ -95,7 +95,7 @@ public class PavlovPawnExport : INetFieldExportGroup
     /// <summary>
     /// Gets or sets the player velocity (handle 46).
     /// </summary>
-    [NetFieldExportHandle(46, RepLayoutCmdType.PropertyVector100)]
+    [NetFieldExportHandle(46, RepLayoutCmdType.PropertyVector10)]
     public FVector? Velocity { get; set; }
 
     /// <summary>
@@ -378,6 +378,12 @@ public class PavlovPawnExport : INetFieldExportGroup
     /// </summary>
     [NetFieldExport("bTearOff", RepLayoutCmdType.PropertyBool)]
     public bool? bTearOff { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom mesh (Unknown purpose). Ignored.
+    /// </summary>
+    [NetFieldExport("CustomMesh", RepLayoutCmdType.Ignore)]
+    public uint? CustomMesh { get; set; }
 
     #endregion
 

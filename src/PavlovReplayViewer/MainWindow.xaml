@@ -123,25 +123,47 @@
                 </ScrollViewer>
             </Border>
             
-            <!-- Right Panel - Event Log -->
-            <Border Grid.Column="1" Background="#252526" Margin="5">
-                <StackPanel Margin="10">
-                    <TextBlock Text="EVENTS" FontWeight="Bold" FontSize="14" Foreground="#569CD6" Margin="0,0,0,10"/>
-                    <ListBox x:Name="EventsList" Background="#1E1E1E" Foreground="#DCDCDC" 
-                             BorderBrush="#3E3E40"
-                             SelectionChanged="EventsList_SelectionChanged">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding TimeFormatted}" Foreground="#888888" Width="50"/>
-                                    <TextBlock Text="{Binding EventType}" Foreground="#569CD6" Width="60"/>
-                                    <TextBlock Text="{Binding Description}" Foreground="#DCDCDC"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-            </Border>
+            <Grid Grid.Column="1" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Top: Interactive 2D Map -->
+                <Border Grid.Row="0" Background="#1E1E1E" CornerRadius="5" Padding="8" Margin="0,0,0,10">
+                    <Grid>
+                        <TextBlock Text="MAP" FontWeight="Bold" FontSize="14" Foreground="#569CD6" Margin="0,0,0,8" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Border Background="#111" BorderBrush="#333" BorderThickness="1" Margin="0,24,0,0" ClipToBounds="True">
+                            <Grid>
+                                <ScrollViewer x:Name="MapScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                    <Canvas x:Name="MapCanvas" Width="2000" Height="2000" Background="#101010" MouseWheel="MapCanvas_MouseWheel" MouseLeftButtonDown="MapCanvas_MouseLeftButtonDown" MouseLeftButtonUp="MapCanvas_MouseLeftButtonUp" MouseMove="MapCanvas_MouseMove" />
+                                </ScrollViewer>
+                                <TextBlock x:Name="MapInfoText" Text="Zoom: 100% - Drag to pan (use mouse wheel to zoom). Click marker to center." Foreground="#AAAAAA" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="8"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Bottom: Event Log -->
+                <Border Grid.Row="1" Background="#252526">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="EVENTS" FontWeight="Bold" FontSize="14" Foreground="#569CD6" Margin="0,0,0,10"/>
+                        <ListBox x:Name="EventsList" Background="#1E1E1E" Foreground="#DCDCDC" 
+                                 BorderBrush="#3E3E40"
+                                 SelectionChanged="EventsList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding TimeFormatted}" Foreground="#888888" Width="50"/>
+                                        <TextBlock Text="{Binding EventType}" Foreground="#569CD6" Width="60"/>
+                                        <TextBlock Text="{Binding Description}" Foreground="#DCDCDC"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
         
         <!-- Bottom - Timeline Scrubber -->

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -114,11 +115,11 @@ foreach (var replayFile in replayFiles)
         File.WriteAllText(summaryFilePath, JsonSerializer.Serialize(summary, jsonOptions));
         Console.WriteLine($"\nSummary saved to: {summaryFilePath}");
         
-        // Export 2: Timeline data (positions over time)
+        // Export 2: Timeline data (positions over time) — written as NDJSON to avoid large memory usage
         if (timeline != null && timeline.PawnTimelines.Count > 0)
         {
-            var timelineFilePath = Path.Combine(replayFilesFolder, baseName + "_timeline.json");
-            File.WriteAllText(timelineFilePath, JsonSerializer.Serialize(timeline, jsonOptions));
+            var timelineFilePath = Path.Combine(replayFilesFolder, baseName + "_timeline.ndjson");
+            ExportTimelineNdjson(timelineFilePath, timeline, jsonOptions);
             Console.WriteLine($"Timeline saved to: {timelineFilePath}");
             
             // Export 3: CSV of positions (easier to work with for analysis)
@@ -127,9 +128,9 @@ foreach (var replayFile in replayFiles)
             Console.WriteLine($"Positions CSV saved to: {csvFilePath}");
         }
         
-        // Export 4: Full replay data (for debugging)
-        var fullFilePath = Path.Combine(replayFilesFolder, baseName + "_full.json");
-        File.WriteAllText(fullFilePath, JsonSerializer.Serialize(replay, jsonOptions));
+        // Export 4: Full replay data (for debugging) — streamed NDJSON (use .gz extension to compress)
+        var fullFilePath = Path.Combine(replayFilesFolder, baseName + "_full.ndjson");
+        ExportReplayNdjson(fullFilePath, replay, timeline, jsonOptions);
         Console.WriteLine($"Full replay saved to: {fullFilePath}");
     }
     catch (Exception ex)
@@ -145,6 +146,73 @@ foreach (var replayFile in replayFiles)
 Console.WriteLine($"\ntotal: {total / 1000.0:F1} seconds");
 
 /// <summary>
+/// Export timeline as NDJSON (one JSON object per line). If filePath ends with .gz, it will be compressed.
+/// </summary>
+static void ExportTimelineNdjson(string filePath, ReplayTimeline timeline, JsonSerializerOptions options)
+{
+    using var fs = File.Create(filePath);
+    Stream outStream = fs;
+    if (filePath.EndsWith(".gz", StringComparison.OrdinalIgnoreCase) || filePath.EndsWith(".gzip", StringComparison.OrdinalIgnoreCase))
+    {
+        outStream = new GZipStream(fs, CompressionLevel.Optimal);
+    }
+    using var sw = new StreamWriter(outStream);
+    // Header
+    sw.WriteLine(JsonSerializer.Serialize(new { type = "timeline_header", pawnCount = timeline.PawnTimelines.Count, events = timeline.Events.Count }, options));
+    foreach (var pt in timeline.PawnTimelines)
+    {
+        foreach (var snapshot in pt.Snapshots)
+        {
+            sw.WriteLine(JsonSerializer.Serialize(new { type = "snapshot", channel = pt.ChannelIndex, team = pt.TeamId, player = pt.PlayerName, data = snapshot }, options));
+        }
+    }
+    foreach (var ev in timeline.Events)
+    {
+        sw.WriteLine(JsonSerializer.Serialize(new { type = "event", data = ev }, options));
+    }
+    sw.Flush();
+}
+
+/// <summary>
+/// Export entire replay as NDJSON (multiple lines: header, gameData, stats, players, timeline snapshots, events).
+/// Use a .gz extension to create a compressed file.
+/// </summary>
+static void ExportReplayNdjson(string filePath, PavlovReplay replay, ReplayTimeline timeline, JsonSerializerOptions options)
+{
+    using var fs = File.Create(filePath);
+    Stream outStream = fs;
+    if (filePath.EndsWith(".gz", StringComparison.OrdinalIgnoreCase) || filePath.EndsWith(".gzip", StringComparison.OrdinalIgnoreCase))
+    {
+        outStream = new GZipStream(fs, CompressionLevel.Optimal);
+    }
+    using var sw = new StreamWriter(outStream);
+    sw.WriteLine(JsonSerializer.Serialize(new { type = "header", data = replay.Header }, options));
+    sw.WriteLine(JsonSerializer.Serialize(new { type = "gameData", data = replay.GameData }, options));
+    sw.WriteLine(JsonSerializer.Serialize(new { type = "stats", data = replay.Stats }, options));
+    if (replay.Players != null)
+    {
+        foreach (var p in replay.Players)
+            sw.WriteLine(JsonSerializer.Serialize(new { type = "player", data = p }, options));
+    }
+    if (timeline != null)
+    {
+        sw.WriteLine(JsonSerializer.Serialize(new { type = "timeline_info", pawnTimelines = timeline.PawnTimelines.Count, events = timeline.Events.Count }, options));
+        foreach (var pt in timeline.PawnTimelines)
+        {
+            foreach (var snapshot in pt.Snapshots)
+            {
+                sw.WriteLine(JsonSerializer.Serialize(new { type = "snapshot", channel = pt.ChannelIndex, team = pt.TeamId, player = pt.PlayerName, data = snapshot }, options));
+            }
+        }
+        foreach (var ev in timeline.Events)
+        {
+            sw.WriteLine(JsonSerializer.Serialize(new { type = "event", data = ev }, options));
+        }
+    }
+    sw.Flush();
+}
+
+/// <summary>
 /// Export position data as CSV for easy analysis in spreadsheets or other tools.
 /// </summary>
 static void ExportPositionsCsv(string filePath, ReplayTimeline timeline)
@@ -152,13 +220,14 @@ static void ExportPositionsCsv(string filePath, ReplayTimeline timeline)
     using var writer = new StreamWriter(filePath);
     
     // Header - include hand positions for full VR tracking data
-    writer.WriteLine("Time,PawnChannel,TeamId,PlayerName,HeadX,HeadY,HeadZ,LeftHandX,LeftHandY,LeftHandZ,RightHandX,RightHandY,RightHandZ,Heading,Pitch,Yaw,Roll");
+    writer.WriteLine("Time,PawnChannel,TeamId,PlayerName,WorldX,WorldY,WorldZ,VelocityX,VelocityY,VelocityZ,HeadX,HeadY,HeadZ,LeftHandX,LeftHandY,LeftHandZ,RightHandX,RightHandY,RightHandZ,Heading,Pitch,Yaw,Roll");
     
     // Data rows
     foreach (var pawnTimeline in timeline.PawnTimelines)
     {
         foreach (var snapshot in pawnTimeline.Snapshots)
         {
+            //Console.WriteLine($"Position: Time={snapshot.Time:F2}s PawnCh={pawnTimeline.ChannelIndex} Player={pawnTimeline.PlayerName} Loc=({snapshot.Location?.X:F1},{snapshot.Location?.Y:F1},{snapshot.Location?.Z:F1})");
             var line = string.Join(",",
                 snapshot.Time.ToString("F2"),
                 pawnTimeline.ChannelIndex,
@@ -167,6 +236,9 @@ static void ExportPositionsCsv(string filePath, ReplayTimeline timeline)
                 snapshot.Location?.X.ToString("F2") ?? "",
                 snapshot.Location?.Y.ToString("F2") ?? "",
                 snapshot.Location?.Z.ToString("F2") ?? "",
+                snapshot.Velocity?.X.ToString("F2") ?? "",
+                snapshot.Velocity?.Y.ToString("F2") ?? "",
+                snapshot.Velocity?.Z.ToString("F2") ?? "",
                 snapshot.HeadLocation?.X.ToString("F2") ?? "",
                 snapshot.HeadLocation?.Y.ToString("F2") ?? "",
                 snapshot.HeadLocation?.Z.ToString("F2") ?? "",
@@ -193,4 +265,4 @@ static string EscapeCsv(string value)
         return $"\"{value.Replace("\"", "\"\"")}\"";
     }
     return value;
-}
+} 
