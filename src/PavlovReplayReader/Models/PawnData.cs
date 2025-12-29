@@ -21,9 +21,14 @@ public class PawnData
     #region Position and Movement
 
     /// <summary>
-    /// Current world location of the pawn (from Location1 - head/body position).
+    /// Current world location of the pawn (from Location - world pawn position).
     /// </summary>
     public FVector? Location { get; set; }
+
+    /// <summary>
+    /// Head location (from Location1).
+    /// </summary>
+    public FVector? HeadLocation { get; set; }
 
     /// <summary>
     /// Left hand world location (from Location2).

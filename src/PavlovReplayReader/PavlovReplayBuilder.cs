@@ -400,8 +400,7 @@ public class PavlovReplayBuilder
         pawn.LastUpdateTime = _lastWorldTime;
         
         // VR Tracking positions - Location1/2/3 are the actual tracked positions in Pavlov
-        // In Pavlov VR, these ARE the world positions for head and hands
-        if (export.Location1 is not null) pawn.Location = export.Location1;
+        if (export.Location1 is not null) pawn.HeadLocation = export.Location1;
         if (export.Location2 is not null) pawn.LeftHandLocation = export.Location2;
         if (export.Location3 is not null) pawn.RightHandLocation = export.Location3;
         
@@ -410,7 +409,7 @@ public class PavlovReplayBuilder
         if (export.Rotation1 is not null) pawn.LeftHandRotation = export.Rotation1;
         if (export.Rotation2 is not null) pawn.RightHandRotation = export.Rotation2;
         
-        // Legacy Location/Velocity properties (fallback if nothing else available)
+        // World Location/Velocity properties
         if (export.Location is not null && pawn.Location is null) pawn.Location = export.Location;
         if (export.Velocity is not null && pawn.Velocity is null) pawn.Velocity = export.Velocity;
         if (export.Heading.HasValue) pawn.Heading = export.Heading;
@@ -507,6 +506,7 @@ public class PavlovReplayBuilder
         {
             Time = snapshotTime,  // First snapshot at time 0, subsequent snapshots use relative time
             Location = loc is not null ? new FVector(loc.X, loc.Y, loc.Z) : null,
+            HeadLocation = pawn.HeadLocation is { } hl ? new FVector(hl.X, hl.Y, hl.Z) : null,
             LeftHandLocation = pawn.LeftHandLocation is { } lh ? new FVector(lh.X, lh.Y, lh.Z) : null,
             RightHandLocation = pawn.RightHandLocation is { } rh ? new FVector(rh.X, rh.Y, rh.Z) : null,
             Velocity = pawn.Velocity is { } vel ? new FVector(vel.X, vel.Y, vel.Z) : null,

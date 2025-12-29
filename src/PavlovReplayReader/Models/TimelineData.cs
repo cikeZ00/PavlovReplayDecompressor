@@ -14,9 +14,14 @@ public class PawnSnapshot
     public float Time { get; set; }
 
     /// <summary>
-    /// World location (head/body) at this time.
+    /// World location at this time.
     /// </summary>
     public FVector? Location { get; set; }
+
+    /// <summary>
+    /// Head world location at this time.
+    /// </summary>
+    public FVector? HeadLocation { get; set; }
 
     /// <summary>
     /// Left hand world location at this time.
