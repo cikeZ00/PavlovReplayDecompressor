@@ -1,15 +1,6 @@
 # PavlovReplayDecompressor
 
-PavlovReplayDecompressor is a collection of tools and libraries for reading, decoding and analyzing Pavlov VR replay files. It includes a high-quality C# replay reader, compression/decompression utilities, tests and a small WPF viewer.
-
----
-
-## Highlights
-
-- **Replay parsing**: Robust C# `PavlovReplayReader` for reading and inspecting replay contents.
-- **Decompression**: `OozSharp` implementation of Pavlov/Oodle-like compression and helpers used across the project.
-- **Tools & utilities**: Console readers, benchmarks and a WPF viewer for visual debugging.
-- **Tests**: Unit tests covering decoding, replay parsing and format specifics.
+PavlovReplayDecompressor is a collection of tools and libraries for reading, decoding and analyzing Pavlov VR replay files. It includes a C# replay reader, compression/decompression utilities, tests and a small WPF viewer.
 
 ---
 
@@ -53,29 +44,12 @@ dotnet run -- <path-to-replay>
 ## Project Layout
 
 - `src/` — All C# projects (reader, tools, viewer, compression libs and tests)
-- `PavlovDump/` — Dumps and SDK helpers used for reverse engineering and format references
-- `docs/` — Documentation and reference files
+- `docs/` — Documentation and reference files (Fortnite specific, but it holds for any UE game)
 - `README.md` — This file
 
----
-
-## Documentation & Notes
-
-Documentation and developer notes live in the `docs/` folder. See `docs/index.md` and the other pages for format details and protocol notes.
-
-> Tip: `PavlovDump/` contains helpful dumps and Cpp SDK snippets when investigating packets or Unreal types.
 
 ---
 
-## Contributing
-
-Contributions welcome. Please open issues for bugs or feature requests, and create PRs for fixes or improvements. When contributing:
-
-- Follow the existing style in `src/`
-- Add or update unit tests when changing parsing/decoding behavior
-- Keep changes small and reviewable
-
----
 
 ## Special thanks
 
