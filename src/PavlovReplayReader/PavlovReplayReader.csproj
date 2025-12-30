@@ -25,6 +25,15 @@
     <ProjectReference Include="..\Unreal.Encryption\Unreal.Encryption.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Concentus" Version="2.2.2" />
+    <PackageReference Include="Concentus.Oggfile" Version="1.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\NetFieldExports\Consumables\" />
+    <Folder Include="Models\NetFieldExports\Items\" />
+    <Folder Include="Models\NetFieldExports\Vehicles\" />
+    <Folder Include="Models\NetFieldExports\Weapons\" />
   </ItemGroup>
 </Project>

@@ -1,18 +1,11 @@
-﻿using PavlovReplayReader.Exceptions;
-using PavlovReplayReader.Extensions;
-using PavlovReplayReader.Models;
-using PavlovReplayReader.Models.Enums;
-using PavlovReplayReader.Models.Events;
-using PavlovReplayReader.Models.NetFieldExports;
-using PavlovReplayReader.Models.NetFieldExports.Weapons;
+﻿using PavlovReplayReader.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Unreal.Core;
 using Unreal.Core.Contracts;
-using Unreal.Core.Exceptions;
 using Unreal.Core.Models;
 using Unreal.Core.Models.Enums;
 using Unreal.Encryption;
@@ -21,158 +14,126 @@ namespace PavlovReplayReader;
 
 public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
 {
-    private PavlovReplayBuilder Builder;
+    private PavlovReplayBuilder? Builder;
+    private string? _currentFileName;
+    
+    /// <summary>
+    /// Whether to record timeline data (position snapshots over time).
+    /// Set to true before calling ReadReplay to capture timeline data.
+    /// </summary>
+    public bool RecordTimeline { get; set; } = false;
+    
+    /// <summary>
+    /// Minimum time interval between timeline snapshots in seconds.
+    /// Default is 0.1 seconds (10 snapshots per second).
+    /// </summary>
+    public float SnapshotInterval { get; set; } = 0.1f;
 
-    public ReplayReader(ILogger logger = null, ParseMode parseMode = ParseMode.Minimal) : base(logger, parseMode)
+    public ReplayReader(ILogger? logger = null, ParseMode parseMode = ParseMode.Minimal) 
+        : base(logger ?? NullLogger.Instance, parseMode)
     {
     }
 
     public PavlovReplay ReadReplay(string fileName)
     {
+        _currentFileName = Path.GetFileName(fileName);
         using var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         return ReadReplay(stream);
+    }
+
+    public override PavlovReplay ReadReplay(FArchive archive)
+    {
+        Builder = new PavlovReplayBuilder
+        {
+            RecordTimeline = RecordTimeline,
+            SnapshotInterval = SnapshotInterval
+        };
+        
+        Replay = new PavlovReplay();
+        ReadReplayInfo(archive);
+        ReadReplayChunks(archive);
+
+        Cleanup();
+        
+        return Builder.Build(Replay);
+    }
+    
+    /// <summary>
+    /// Gets the timeline data after reading a replay.
+    /// Must have set RecordTimeline = true before reading.
+    /// </summary>
+    public ReplayTimeline? GetTimeline()
+    {
+        return Builder?.BuildTimeline(_currentFileName);
     }
 
     public PavlovReplay ReadReplay(Stream stream)
     {
         using var archive = new Unreal.Core.BinaryReader(stream);
-
-        Builder = new PavlovReplayBuilder();
-        ReadReplay(archive);
-
-        return Builder.Build(Replay);
-    }
-
-    private string _branch;
-    public int Major { get; set; }
-    public int Minor { get; set; }
-    public string Branch
-    {
-        get => _branch;
-        set
-        {
-            var regex = new Regex(@"(?<branch>\d+\.\d+)-CL-(?<major>\d+)", RegexOptions.Compiled);
-            var result = regex.Match(value);
-            if (result.Success)
-            {
-                Major = int.Parse(result.Groups["major"]?.Value ?? "0");
-                Minor = int.Parse(result.Groups["minor"]?.Value ?? "0");
-            }
-            _branch = value;
-        }
+        return ReadReplay(archive);
     }
 
     protected override void OnChannelOpened(uint channelIndex, NetworkGUID? actor)
     {
-        if (actor != null)
+        // Track network GUID to channel index mapping for resolving PropertyObject references
+        if (actor?.Value != null && Builder != null)
         {
-            Builder.AddActorChannel(channelIndex, actor.Value);
+            Builder.OnChannelOpened(channelIndex, actor.Value);
         }
     }
 
     protected override void OnChannelClosed(uint channelIndex, NetworkGUID? actor)
     {
-        if (actor != null)
+        // Clean up channel tracking - note: we keep the mapping as it may still be referenced
+        if (actor?.Value != null && Builder != null)
         {
-            Builder.RemoveChannel(channelIndex);
+            Builder.OnChannelClosed(channelIndex, actor.Value);
         }
     }
 
     protected override void OnNetDeltaRead(uint channelIndex, NetDeltaUpdate update)
     {
-        switch (update.Export)
-        {
-            //case ActiveGameplayModifier modifier:
-            //    Builder.UpdateGameplayModifiers(modifier);
-            //    break;
-            //case FortPickup pickup:
-            //Builder.CreatePickupEvent(channelIndex, pickup);
-            //break;
-            //case FortInventory inventory:
-            //    Builder.UpdateInventory(channelIndex, inventory);
-            //    break;
-        }
+        // TODO: Handle net delta updates
     }
 
     protected override void OnExportRead(uint channelIndex, INetFieldExportGroup? exportGroup)
     {
-        switch (exportGroup)
+        if (exportGroup != null && Builder != null)
         {
-            case GameState state:
-                // DONE
-                // DEBUG: GameState print
-                //foreach (var property in state.GetType().GetProperties())
-                //{
-                //    var value = property.GetValue(state);
-                //    if (value != null)
-                //    {
-                //        Console.WriteLine("{0}: {1}", property.Name, value);
-                //    }
-                //}
-                Builder.UpdateGameState(state);
-                break;
-
-            //case PlaylistInfo playlist:
-            //    Builder.UpdatePlaylistInfo(playlist);
-            //    break;
-
-            case PavlovPlayerState state:
-                // DONE
-                // DEBUG: PlayerState print
-                //foreach (var property in state.GetType().GetProperties())
-                //{
-                //    var value = property.GetValue(state);
-                //    if (value != null)
-                //    {
-                //        Console.WriteLine("{0}: {1}", property.Name, value);
-                //    }
-                //}
-
-                Builder.UpdatePlayerState(channelIndex, state);
-                break;
-
-            case PlayerPawn pawn:
-                Builder.UpdatePlayerPawn(channelIndex, pawn);
-                break;
-
-            //case FortPickup pickup:
-            //Builder.CreatePickupEvent(channelIndex, pickup);
-            //break;
-            //case FortInventory inventory:
-            //    Builder.UpdateInventory(channelIndex, inventory);
-            //    break;
-            //case BroadcastExplosion explosion:
-            //    Builder.UpdateExplosion(explosion);
-            //    break;
-            //case GameplayCue gameplayCue:
-            //    Builder.UpdateGameplayCue(channelIndex, gameplayCue);
-            //    break;
-            case BaseWeapon weapon:
-                Builder.UpdateWeapon(channelIndex, weapon);
-                break;
+            Builder.OnExportRead(channelIndex, exportGroup);
         }
     }
 
     protected override void OnExternalDataRead(uint channelIndex, IExternalData? externalData)
     {
-        // TODO: at the very least, only use PlayerNameData when handle and netfieldgroup match...
-        if (externalData != null)
-        {
-            Builder.UpdatePrivateName(channelIndex, new PlayerNameData(externalData.Archive));
-        }
+        // TODO: Handle external data
     }
 
     public override void ReadReplayHeader(FArchive archive)
     {
         base.ReadReplayHeader(archive);
-        Branch = Replay.Header.Branch;
     }
 
-    /// <summary>
-    /// see https://github.com/EpicGames/UnrealEngine/blob/70bc980c6361d9a7d23f6d23ffe322a2d6ef16fb/Engine/Source/Runtime/NetworkReplayStreaming/LocalFileNetworkReplayStreaming/Private/LocalFileNetworkReplayStreaming.cpp#L363
-    /// </summary>
-    /// <param name="archive"></param>
-    /// <returns></returns>
+    public override void ReadReplayData(FArchive archive, int fallbackChunkSize)
+    {
+        base.ReadReplayData(archive, fallbackChunkSize);
+    }
+
+    public override void ReadDemoFrameIntoPlaybackPackets(FArchive archive)
+    {
+        base.ReadDemoFrameIntoPlaybackPackets(archive);
+    }
+
+    public override void ReadExportData(FArchive archive)
+    {
+        base.ReadExportData(archive);
+    }
+
+    public override void ReadNetFieldExports(FArchive archive)
+    {
+        base.ReadNetFieldExports(archive);
+    }
+
     public override void ReadEvent(FArchive archive)
     {
         var info = new EventInfo
@@ -185,152 +146,12 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
             SizeInBytes = archive.ReadInt32()
         };
 
-        _logger?.LogDebug("Encountered event {group} ({metadata}) at {startTime} of size {sizeInBytes}", info.Group, info.Metadata, info.StartTime, info.SizeInBytes);
+        _logger?.LogDebug("Encountered event {group} ({metadata}) at {startTime} of size {sizeInBytes}", 
+            info.Group, info.Metadata, info.StartTime, info.SizeInBytes);
 
         using var decryptedArchive = DecryptBuffer(archive, info.SizeInBytes);
 
-        // Every event seems to start with some unknown int
-        if (info.Group == ReplayEventTypes.PLAYER_ELIMINATION)
-        {
-            var elimination = ParseElimination(decryptedArchive, info);
-            Replay.Eliminations.Add(elimination);
-            return;
-        }
-
-        else if (info.Metadata == ReplayEventTypes.MATCH_STATS)
-        {
-            Replay.Stats = ParseMatchStats(decryptedArchive, info);
-            return;
-        }
-
-        else if (info.Metadata == ReplayEventTypes.TEAM_STATS)
-        {
-            Replay.TeamStats = ParseTeamStats(decryptedArchive, info);
-            return;
-        }
-
-        else if (info.Metadata == ReplayEventTypes.ENCRYPTION_KEY)
-        {
-            ParseEncryptionKeyEvent(decryptedArchive, info);
-            return;
-        }
-
-        _logger?.LogDebug("Unknown event {group} ({metadata}) of size {sizeInBytes}", info.Group, info.Metadata, info.SizeInBytes);
-        if (IsDebugMode)
-        {
-            throw new UnknownEventException($"Unknown event {info.Group} ({info.Metadata}) of size {info.SizeInBytes}");
-        }
-    }
-
-    public virtual EncryptionKey ParseEncryptionKeyEvent(FArchive archive, EventInfo info) => new()
-    {
-        Info = info,
-        Key = archive.ReadBytesToString(32)
-    };
-
-    public virtual TeamStats ParseTeamStats(FArchive archive, EventInfo info) => new()
-    {
-        Info = info,
-        Unknown = archive.ReadUInt32(),
-        Position = archive.ReadUInt32(),
-        TotalPlayers = archive.ReadUInt32()
-    };
-
-    public virtual Stats ParseMatchStats(FArchive archive, EventInfo info) => new()
-    {
-        Info = info,
-        Unknown = archive.ReadUInt32(),
-        Accuracy = archive.ReadSingle(),
-        Assists = archive.ReadUInt32(),
-        Eliminations = archive.ReadUInt32(),
-        WeaponDamage = archive.ReadUInt32(),
-        OtherDamage = archive.ReadUInt32(),
-        Revives = archive.ReadUInt32(),
-        DamageTaken = archive.ReadUInt32(),
-        DamageToStructures = archive.ReadUInt32(),
-        MaterialsGathered = archive.ReadUInt32(),
-        MaterialsUsed = archive.ReadUInt32(),
-        TotalTraveled = archive.ReadUInt32()
-    };
-
-    public virtual PlayerElimination ParseElimination(FArchive archive, EventInfo info)
-    {
-        try
-        {
-            var elim = new PlayerElimination
-            {
-                Info = info,
-            };
-
-            var version = archive.ReadInt32();
-            Console.WriteLine("Version: " + version);
-
-            if (version >= 3)
-            {
-                // unknown
-                archive.SkipBytes(1);
-
-                if (version >= 6)
-                {
-                    elim.EliminatedInfo.Rotation = archive.ReadFQuat();
-                    elim.EliminatedInfo.Location = archive.ReadFVector();
-                    elim.EliminatedInfo.Scale = archive.ReadFVector();
-                }
-
-                elim.EliminatorInfo.Rotation = archive.ReadFQuat();
-                elim.EliminatorInfo.Location = archive.ReadFVector();
-                elim.EliminatorInfo.Scale = archive.ReadFVector();
-            }
-            else
-            {
-                if (Major <= 4 && Minor < 2)
-                {
-                    //12 bytes including version int. Always all 0s
-                    archive.SkipBytes(8);
-                }
-                else if (Major == 4 && Minor <= 2)
-                {
-                    //Likely transform data with version being part of it, but don't have a replay to verify
-                    archive.SkipBytes(36);
-                }
-            }
-
-            if ((int) archive.EngineNetworkVersion >= 34)
-            {
-                archive.SkipBytes(80);
-            }
-
-            ParsePlayer(archive, elim.EliminatedInfo, version);
-            ParsePlayer(archive, elim.EliminatorInfo, version);
-
-            elim.GunType = archive.ReadByte();
-            elim.Knocked = archive.ReadUInt32AsBoolean();
-            elim.Time = info.StartTime.MillisecondsToTimeStamp();
-            return elim;
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error while parsing PlayerElimination at timestamp {}", info?.StartTime);
-            throw new PlayerEliminationException($"Error while parsing PlayerElimination at timestamp {info?.StartTime}", ex);
-        }
-    }
-
-    public virtual void ParsePlayer(FArchive archive, PlayerEliminationInfo info, int version)
-    {
-        if (version < 6)
-        {
-            info.Id = archive.ReadFString();
-            return;
-        }
-
-        info.PlayerType = archive.ReadByteAsEnum<PlayerTypes>();
-        info.Id = info.PlayerType switch
-        {
-            PlayerTypes.BOT => "Bot",
-            PlayerTypes.NAMED_BOT => archive.ReadFString(),
-            PlayerTypes.PLAYER => archive.ReadGUID(archive.ReadByte()),
-            _ => ""
-        };
+        // TODO: Parse events
     }
 
     protected override FArchive DecryptBuffer(FArchive archive, int size)
@@ -349,15 +170,13 @@ public class ReplayReader : Unreal.Core.ReplayReader<PavlovReplay>
         var key = Replay.Info.EncryptionKey;
         var encryptedBytes = archive.ReadBytes(size);
 
-        using var aesCryptoServiceProvider = new AesCryptoServiceProvider
-        {
-            KeySize = key.Length * 8,
-            Key = key.ToArray(),
-            Mode = CipherMode.ECB,
-            Padding = PaddingMode.PKCS7
-        };
+        using var aes = Aes.Create();
+        aes.KeySize = key.Length * 8;
+        aes.Key = key.ToArray();
+        aes.Mode = CipherMode.ECB;
+        aes.Padding = PaddingMode.PKCS7;
 
-        using var cryptoTransform = aesCryptoServiceProvider.CreateDecryptor();
+        using var cryptoTransform = aes.CreateDecryptor();
         var decryptedArray = cryptoTransform.TransformFinalBlock(encryptedBytes.ToArray(), 0, encryptedBytes.Length);
 
         return new Unreal.Core.BinaryReader(decryptedArray.AsMemory())

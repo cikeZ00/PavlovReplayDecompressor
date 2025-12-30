@@ -297,14 +297,14 @@ public class NetFieldParser
 
         var netGroupInfo = NetFieldGroups[exportGroup.GroupId];
         NetFieldInfo netFieldInfo;
-        if (netGroupInfo.UsesHandles)
+        
+        // First try handle-based lookup if the group uses handles
+        if (netGroupInfo.UsesHandles && netGroupInfo.Handles.TryGetValue(handle, out netFieldInfo))
         {
-            if (!netGroupInfo.Handles.TryGetValue(handle, out netFieldInfo))
-            {
-                return false;
-            }
+            // Found by handle
         }
-        else
+        // Fallback to name-based lookup (also handles groups that don't use handles)
+        else if (netGroupInfo.Properties.Length > 0)
         {
             var propertyIndex = export.PropertyId;
             if (export.PropertyId == -1)
@@ -319,6 +319,10 @@ public class NetFieldParser
             }
 
             netFieldInfo = netGroupInfo.Properties[propertyIndex];
+        }
+        else
+        {
+            return false;
         }
 
         SetType(obj, netFieldInfo, netGroupInfo, exportGroup, netBitReader, singleInstance);

@@ -1,0 +1,352 @@
+<Window x:Class="PavlovReplayViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PavlovReplayViewer"
+        mc:Ignorable="d"
+        Title="Pavlov Replay Viewer" Height="900" Width="1600"
+        Background="#1E1E1E">
+    <Window.Resources>
+        <local:TimeSpanConverter x:Key="TimeSpanConverter"/>
+        <local:TeamColorConverter x:Key="TeamColorConverter"/>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
+        <!-- Material Design Elevation Shadows (Dark Theme) -->
+        <DropShadowEffect x:Key="Elevation2" Color="#000000" Opacity="0.4" BlurRadius="8" ShadowDepth="2" Direction="270"/>
+        <DropShadowEffect x:Key="Elevation4" Color="#000000" Opacity="0.6" BlurRadius="12" ShadowDepth="4" Direction="270"/>
+        
+        <!-- Dark Theme Colors -->
+        <SolidColorBrush x:Key="PrimaryColor" Color="#2196F3"/>
+        <SolidColorBrush x:Key="PrimaryDarkColor" Color="#1976D2"/>
+        <SolidColorBrush x:Key="AccentColor" Color="#FF4081"/>
+        <SolidColorBrush x:Key="TextPrimaryColor" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="TextSecondaryColor" Color="#B0B0B0"/>
+        <SolidColorBrush x:Key="DividerColor" Color="#404040"/>
+        <SolidColorBrush x:Key="CardBackgroundColor" Color="#2D2D30"/>
+        <SolidColorBrush x:Key="BackgroundColor" Color="#252526"/>
+        
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect" Value="{StaticResource Elevation2}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryDarkColor}"/>
+                                <Setter Property="Effect" Value="{StaticResource Elevation4}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Effect" Value="{StaticResource Elevation2}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <Style TargetType="Slider">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Menu Bar with Material Design -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryColor}" Effect="{StaticResource Elevation4}">
+            <Menu Background="Transparent" Foreground="White">
+                <Menu.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel HorizontalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </Menu.ItemsPanel>
+                <Menu.Resources>
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="FontSize" Value="14"/>
+                        <Setter Property="Padding" Value="12,8"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryDarkColor}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="Separator">
+                        <Setter Property="Background" Value="{StaticResource DividerColor}"/>
+                    </Style>
+                </Menu.Resources>
+                <MenuItem Header="FILE" Foreground="White">
+                    <MenuItem Header="Open Replay..." Click="OpenReplay_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Exit" Click="Exit_Click"/>
+                </MenuItem>
+                <MenuItem Header="PLAYBACK" Foreground="White">
+                    <MenuItem Header="Play/Pause" Command="{Binding PlayPauseCommand}"/>
+                    <MenuItem Header="Stop" Command="{Binding StopCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Speed 0.5x" Command="{Binding SetSpeedCommand}" CommandParameter="0.5"/>
+                    <MenuItem Header="Speed 1x" Command="{Binding SetSpeedCommand}" CommandParameter="1"/>
+                    <MenuItem Header="Speed 2x" Command="{Binding SetSpeedCommand}" CommandParameter="2"/>
+                    <MenuItem Header="Speed 4x" Command="{Binding SetSpeedCommand}" CommandParameter="4"/>
+                </MenuItem>
+            </Menu>
+        </Border>
+        
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left Panel: 2D Map with Material Card -->
+            <Border Grid.Column="0" 
+                    Background="{StaticResource CardBackgroundColor}" 
+                    CornerRadius="8"
+                    Effect="{StaticResource Elevation2}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" 
+                            Background="{StaticResource PrimaryColor}" 
+                            CornerRadius="8,8,0,0"
+                            Padding="16,12">
+                        <TextBlock Text="2D PLAYER MAP" 
+                                   Foreground="White"
+                                   FontSize="16" 
+                                   FontWeight="Bold"/>
+                    </Border>
+                    
+                    <local:Player2DMapControl Grid.Row="1" 
+                                             x:Name="MapControl" 
+                                             PlayerPositions="{Binding CurrentPlayerPositions}"
+                                             Background="#1E1E1E"
+                                             Margin="8"/>
+                </Grid>
+            </Border>
+            
+            <GridSplitter Grid.Column="1" 
+                         Width="8" 
+                         HorizontalAlignment="Stretch" 
+                         Background="Transparent"
+                         ShowsPreview="False"/>
+            
+            <!-- Right Panel: Stats and Info with Material Cards -->
+            <Border Grid.Column="2" 
+                    Background="{StaticResource CardBackgroundColor}" 
+                    CornerRadius="8"
+                    Effect="{StaticResource Elevation2}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <!-- Replay Info Card -->
+                        <Border Background="{StaticResource BackgroundColor}" 
+                                CornerRadius="4" 
+                                Padding="12" 
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="REPLAY INFO" 
+                                          FontSize="12" 
+                                          FontWeight="Bold" 
+                                          Foreground="{StaticResource TextSecondaryColor}"
+                                          Margin="0,0,0,8"/>
+                                <StackPanel Visibility="{Binding IsReplayLoaded, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="{Binding ReplayFileName, StringFormat='File: {0}'}" 
+                                              Margin="0,4"
+                                              TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding MapName, StringFormat='Map: {0}'}" Margin="0,4"/>
+                                    <TextBlock Text="{Binding GameMode, StringFormat='Mode: {0}'}" Margin="0,4"/>
+                                    <TextBlock Text="{Binding TotalDuration, StringFormat='Duration: {0}', Converter={StaticResource TimeSpanConverter}}" Margin="0,4"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Current Stats Card -->
+                        <Border Background="{StaticResource BackgroundColor}" 
+                                CornerRadius="4" 
+                                Padding="12" 
+                                Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="PLAYBACK STATUS" 
+                                          FontSize="12" 
+                                          FontWeight="Bold" 
+                                          Foreground="{StaticResource TextSecondaryColor}"
+                                          Margin="0,0,0,8"/>
+                                <TextBlock Text="{Binding CurrentTime, StringFormat='Time: {0}', Converter={StaticResource TimeSpanConverter}}" Margin="0,4"/>
+                                <TextBlock Text="{Binding PlaybackSpeed, StringFormat='Speed: {0:F1}x'}" Margin="0,4"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Player List -->
+                        <TextBlock Text="PLAYERS" 
+                                  FontSize="12" 
+                                  FontWeight="Bold" 
+                                  Foreground="{StaticResource TextSecondaryColor}"
+                                  Margin="0,0,0,8"/>
+                        <ItemsControl ItemsSource="{Binding Players}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource BackgroundColor}"
+                                            BorderBrush="{Binding TeamId, Converter={StaticResource TeamColorConverter}}" 
+                                            BorderThickness="0,0,0,4" 
+                                            CornerRadius="4"
+                                            Margin="0,0,0,8" 
+                                            Padding="12"
+                                            Effect="{StaticResource Elevation2}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding PlayerName}" 
+                                                      FontWeight="Bold" 
+                                                      FontSize="15"
+                                                      Foreground="{StaticResource TextPrimaryColor}"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                <Border Background="{StaticResource PrimaryColor}" 
+                                                       CornerRadius="2" 
+                                                       Padding="6,2" 
+                                                       Margin="0,0,4,0">
+                                                    <TextBlock Text="{Binding Kills, StringFormat='K: {0}'}" 
+                                                              Foreground="White"
+                                                              FontSize="12"/>
+                                                </Border>
+                                                <Border Background="#F44336" 
+                                                       CornerRadius="2" 
+                                                       Padding="6,2" 
+                                                       Margin="0,0,4,0">
+                                                    <TextBlock Text="{Binding Deaths, StringFormat='D: {0}'}" 
+                                                              Foreground="White"
+                                                              FontSize="12"/>
+                                                </Border>
+                                                <Border Background="#4CAF50" 
+                                                       CornerRadius="2" 
+                                                       Padding="6,2">
+                                                    <TextBlock Text="{Binding Assists, StringFormat='A: {0}'}" 
+                                                              Foreground="White"
+                                                              FontSize="12"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Score, StringFormat='Score: {0:F0}'}" 
+                                                      Margin="0,6,0,0"
+                                                      FontSize="13"
+                                                      Foreground="{StaticResource TextSecondaryColor}"/>
+                                            <Border Background="#F44336" 
+                                                   CornerRadius="2" 
+                                                   Padding="8,4" 
+                                                   Margin="0,4,0,0"
+                                                   HorizontalAlignment="Left"
+                                                   Visibility="{Binding IsDead, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <TextBlock Text="✕ ELIMINATED" 
+                                                          Foreground="White" 
+                                                          FontWeight="Bold"
+                                                          FontSize="11"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        
+        <!-- Bottom Panel: Timeline Controls with Material Design -->
+        <Border Grid.Row="2" 
+                Background="{StaticResource CardBackgroundColor}" 
+                Padding="16,12"
+                Effect="{StaticResource Elevation4}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Timeline Slider -->
+                <Grid Grid.Row="0" Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0" 
+                              Text="{Binding CurrentTime, Converter={StaticResource TimeSpanConverter}}" 
+                              VerticalAlignment="Center" 
+                              Margin="0,0,12,0"
+                              FontWeight="Medium"
+                              FontSize="15"
+                              Foreground="{StaticResource PrimaryColor}"/>
+                    
+                    <Slider Grid.Column="1" 
+                            Minimum="0" 
+                            Maximum="{Binding TotalDuration}" 
+                            Value="{Binding CurrentTime, Mode=TwoWay}" 
+                            VerticalAlignment="Center"
+                            IsEnabled="{Binding IsReplayLoaded}"
+                            Thumb.DragStarted="Timeline_DragStarted"
+                            Thumb.DragCompleted="Timeline_DragCompleted"
+                            Height="24"/>
+                    
+                    <TextBlock Grid.Column="2" 
+                              Text="{Binding TotalDuration, Converter={StaticResource TimeSpanConverter}}" 
+                              VerticalAlignment="Center" 
+                              Margin="12,0,0,0"
+                              FontWeight="Medium"
+                              FontSize="15"
+                              Foreground="{StaticResource TextSecondaryColor}"/>
+                </Grid>
+                
+                <!-- Playback Controls -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="⏮" Command="{Binding GoToStartCommand}" Width="50" ToolTip="Go to start"/>
+                    <Button Content="⏪" Command="{Binding SkipBackwardCommand}" Width="50" ToolTip="Skip backward 10s"/>
+                    <Button Content="{Binding PlayPauseButtonText}" 
+                           Command="{Binding PlayPauseCommand}" 
+                           Width="120" 
+                           FontWeight="Bold"
+                           FontSize="15"
+                           Padding="20,10"
+                           Background="{StaticResource AccentColor}"/>
+                    <Button Content="⏩" Command="{Binding SkipForwardCommand}" Width="50" ToolTip="Skip forward 10s"/>
+                    <Button Content="⏭" Command="{Binding GoToEndCommand}" Width="50" ToolTip="Go to end"/>
+                    <Border Background="{StaticResource BackgroundColor}" 
+                           CornerRadius="4" 
+                           Padding="12,8" 
+                           Margin="16,0,0,0"
+                           VerticalAlignment="Center">
+                        <TextBlock Text="{Binding PlaybackSpeed, StringFormat='Speed: {0:F1}x'}" 
+                                  FontWeight="Medium"
+                                  Foreground="{StaticResource TextPrimaryColor}"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
