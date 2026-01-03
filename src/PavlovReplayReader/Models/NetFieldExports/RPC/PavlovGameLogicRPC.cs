@@ -31,7 +31,7 @@ public class MulticastOnRoundStateChanged : INetFieldExportGroup
 /// Contains RPC function mappings for game logic events.
 /// Path: /Script/PavlovProxy.Pavlov_GameLogic_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Script/PavlovProxy.Pavlov_GameLogic_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Pavlov_GameLogic_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovGameLogicCache
 {
     /// <summary>

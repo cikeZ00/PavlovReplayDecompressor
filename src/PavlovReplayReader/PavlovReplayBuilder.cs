@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PavlovReplayReader.Models;
 using PavlovReplayReader.Models.NetFieldExports;
+using PavlovReplayReader.Models.NetFieldExports.RPC;
 using Unreal.Core.Contracts;
 using Unreal.Core.Models;
 
@@ -63,7 +64,6 @@ public class PavlovReplayBuilder
     private readonly List<GameEvent> _gameEvents = new();
     private int? _lastTeam0Score = null;
     private int? _lastTeam1Score = null;
-    private string? _lastMatchState = null;
     
     // Network GUID to channel index mapping for resolving PropertyObject references
     // PropertyObject fields like PlayerState, Owner, Controller are network GUIDs, not channel indices
@@ -208,6 +208,65 @@ public class PavlovReplayBuilder
                 break;
             case JailbreakGameStateExport jailbreakState:
                 HandleJailbreakGameState(jailbreakState);
+                break;
+            
+            // RPC Events - Kill feed
+            case MulticastOnKillfeedEntry killfeed:
+                HandleKillfeedRPC(channelIndex, killfeed);
+                break;
+            
+            // RPC Events - Damage
+            case MulticastOnImpactDamage damage:
+                HandleImpactDamageRPC(channelIndex, damage);
+                break;
+            case MulticastOnHeadshot headshot:
+                HandleHeadshotRPC(channelIndex, headshot);
+                break;
+            case MulticastOnHelmetHit helmetHit:
+                HandleHelmetHitRPC(channelIndex, helmetHit);
+                break;
+            case MulticastOnRadialDeath radialDeath:
+                HandleRadialDeathRPC(channelIndex, radialDeath);
+                break;
+            
+            // RPC Events - Bomb
+            case MulticastOnPlantStateChanged plantState:
+                HandleBombPlantStateRPC(channelIndex, plantState);
+                break;
+            case MulticastOnEnterCode enterCode:
+                HandleBombCodeRPC(channelIndex, enterCode);
+                break;
+            case MulticastOnDefuse defuse:
+                HandleBombDefuseRPC(channelIndex);
+                break;
+            case MulticastOnDetonation bombDetonate:
+                HandleBombDetonationRPC(channelIndex);
+                break;
+            
+            // RPC Events - Grenades
+            case GrenadeMulticastOnDetonation grenadeDetonate:
+                HandleGrenadeDetonationRPC(channelIndex);
+                break;
+            case MulticastOnSafetyPinRemoved pinRemoved:
+                HandleGrenadePinRemovedRPC(channelIndex);
+                break;
+            case MulticastOnReleaseSafetyLever leverReleased:
+                HandleGrenadeLeverReleasedRPC(channelIndex);
+                break;
+            
+            // RPC Events - Weapons
+            case MulticastFire weaponFire:
+                HandleWeaponFireRPC(channelIndex);
+                break;
+            
+            // RPC Events - Knife
+            case MulticastOnStab stab:
+                HandleKnifeStabRPC(channelIndex, stab);
+                break;
+            
+            // RPC Events - Health/Death
+            case MulticastOnKilledWithData killedWithData:
+                HandleKilledWithDataRPC(channelIndex, killedWithData);
                 break;
             
             // Fallback for any GameState/PlayerState variants we might have missed
@@ -948,6 +1007,455 @@ public class PavlovReplayBuilder
         if (export.GuardsAlive.HasValue) _gameModeData.Jailbreak_GuardsAlive = export.GuardsAlive;
         if (export.PrisonersAlive.HasValue) _gameModeData.Jailbreak_PrisonersAlive = export.PrisonersAlive;
         if (export.bLastRequest.HasValue) _gameModeData.Jailbreak_LastRequest = export.bLastRequest;
+    }
+
+    #endregion
+
+    #region RPC Event Handlers
+
+    /// <summary>
+    /// Handles killfeed RPC events with full kill data.
+    /// </summary>
+    private void HandleKillfeedRPC(uint channelIndex, MulticastOnKillfeedEntry export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        // Resolve killer/victim from object references if names not provided
+        string? killerName = export.KillerName;
+        string? victimName = export.VictimName;
+        byte? killerTeamId = (byte?)(export.KillerTeamId);
+        byte? victimTeamId = (byte?)(export.VictimTeamId);
+        
+        // Try to resolve killer name from object reference
+        // Killer/Victim are PlayerState references, so resolve directly to _players
+        if (string.IsNullOrEmpty(killerName) && export.Killer.HasValue)
+        {
+            var killerChannel = ResolveGuidToChannel(export.Killer);
+            if (killerChannel.HasValue && _players.TryGetValue(killerChannel.Value, out var killerPlayer))
+            {
+                killerName = killerPlayer.PlayerName;
+                killerTeamId = (byte?)killerPlayer.TeamId;
+            }
+        }
+        
+        // Try to resolve victim name from object reference
+        if (string.IsNullOrEmpty(victimName) && export.Victim.HasValue)
+        {
+            var victimChannel = ResolveGuidToChannel(export.Victim);
+            if (victimChannel.HasValue && _players.TryGetValue(victimChannel.Value, out var victimPlayer))
+            {
+                victimName = victimPlayer.PlayerName;
+                victimTeamId = (byte?)victimPlayer.TeamId;
+            }
+        }
+        
+        var killEvent = new KillEvent
+        {
+            Time = currentTime,
+            EventType = "Kill",
+            KillerName = killerName,
+            VictimName = victimName,
+            IsHeadshot = export.bHeadshot ?? false,
+            KillerTeamId = killerTeamId,
+            VictimTeamId = victimTeamId,
+            Description = $"{killerName ?? "Unknown"} killed {victimName ?? "Unknown"}" +
+                         (export.bHeadshot == true ? " (headshot)" : "")
+        };
+        
+        // Try to parse IDs
+        if (ulong.TryParse(export.KillerId, out var killerId))
+            killEvent.KillerId = killerId;
+        if (ulong.TryParse(export.VictimId, out var victimId))
+            killEvent.VictimId = victimId;
+        
+        _gameEvents.Add(killEvent);
+    }
+
+    /// <summary>
+    /// Handles impact damage RPC events.
+    /// </summary>
+    private void HandleImpactDamageRPC(uint channelIndex, MulticastOnImpactDamage export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        // Get victim info from pawn if available
+        string? victimName = null;
+        if (_pawns.TryGetValue(channelIndex, out var pawn) && pawn.ResolvedPlayerChannel.HasValue)
+        {
+            if (_players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                victimName = player.PlayerName;
+        }
+        
+        var damageEvent = new DamageEvent
+        {
+            Time = currentTime,
+            EventType = "Damage",
+            VictimChannel = channelIndex,
+            VictimName = victimName,
+            BoneName = export.BoneName,
+            Location = export.Location,
+            Direction = export.Direction,
+            ImpulseForce = export.ImpulseForce,
+            WoundRate = export.WoundRate,
+            WoundScale = export.WoundScale,
+            Description = $"Impact damage to {export.BoneName ?? "body"}"
+        };
+        
+        _gameEvents.Add(damageEvent);
+    }
+
+    /// <summary>
+    /// Handles headshot RPC events.
+    /// </summary>
+    private void HandleHeadshotRPC(uint channelIndex, MulticastOnHeadshot export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        string? victimName = null;
+        if (_pawns.TryGetValue(channelIndex, out var pawn) && pawn.ResolvedPlayerChannel.HasValue)
+        {
+            if (_players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                victimName = player.PlayerName;
+        }
+        
+        var damageEvent = new DamageEvent
+        {
+            Time = currentTime,
+            EventType = "Headshot",
+            VictimChannel = channelIndex,
+            VictimName = victimName,
+            Location = export.HitLocation,
+            Direction = export.HitDirection,
+            WoundRate = export.WoundRate,
+            IsHeadshot = true,
+            Description = $"Headshot on {victimName ?? "Unknown"}"
+        };
+        
+        _gameEvents.Add(damageEvent);
+    }
+
+    /// <summary>
+    /// Handles helmet hit RPC events.
+    /// </summary>
+    private void HandleHelmetHitRPC(uint channelIndex, MulticastOnHelmetHit export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        string? victimName = null;
+        if (_pawns.TryGetValue(channelIndex, out var pawn) && pawn.ResolvedPlayerChannel.HasValue)
+        {
+            if (_players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                victimName = player.PlayerName;
+        }
+        
+        var damageEvent = new DamageEvent
+        {
+            Time = currentTime,
+            EventType = "HelmetHit",
+            VictimChannel = channelIndex,
+            VictimName = victimName,
+            Location = export.Location,
+            Direction = export.Direction,
+            IsHelmetHit = true,
+            Description = $"Helmet hit on {victimName ?? "Unknown"}"
+        };
+        
+        _gameEvents.Add(damageEvent);
+    }
+
+    /// <summary>
+    /// Handles radial death (explosion) RPC events.
+    /// </summary>
+    private void HandleRadialDeathRPC(uint channelIndex, MulticastOnRadialDeath export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        string? victimName = null;
+        if (_pawns.TryGetValue(channelIndex, out var pawn) && pawn.ResolvedPlayerChannel.HasValue)
+        {
+            if (_players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                victimName = player.PlayerName;
+        }
+        
+        var damageEvent = new DamageEvent
+        {
+            Time = currentTime,
+            EventType = "RadialDeath",
+            VictimChannel = channelIndex,
+            VictimName = victimName,
+            Location = export.Origin,
+            Description = $"{victimName ?? "Unknown"} killed by explosion"
+        };
+        
+        _gameEvents.Add(damageEvent);
+    }
+
+    /// <summary>
+    /// Handles bomb plant state change RPC.
+    /// </summary>
+    private void HandleBombPlantStateRPC(uint channelIndex, MulticastOnPlantStateChanged export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var bombEvent = new BombEvent
+        {
+            Time = currentTime,
+            EventType = export.bPlanted == true ? "BombPlanted" : "BombDefused",
+            BombAction = export.bPlanted == true ? "Planted" : "Defused",
+            IsPlanted = export.bPlanted,
+            Description = export.bPlanted == true ? "Bomb planted" : "Bomb defused"
+        };
+        
+        _gameEvents.Add(bombEvent);
+    }
+
+    /// <summary>
+    /// Handles bomb code entry RPC.
+    /// </summary>
+    private void HandleBombCodeRPC(uint channelIndex, MulticastOnEnterCode export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var bombEvent = new BombEvent
+        {
+            Time = currentTime,
+            EventType = "BombCodeEntry",
+            BombAction = "CodeEntry",
+            CodeSucceeded = export.bSucceed,
+            Description = export.bSucceed == true ? "Bomb code entered successfully" : "Bomb code failed"
+        };
+        
+        _gameEvents.Add(bombEvent);
+    }
+
+    /// <summary>
+    /// Handles bomb defuse RPC.
+    /// </summary>
+    private void HandleBombDefuseRPC(uint channelIndex)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var bombEvent = new BombEvent
+        {
+            Time = currentTime,
+            EventType = "BombDefused",
+            BombAction = "Defused",
+            IsDefused = true,
+            Description = "Bomb defused"
+        };
+        
+        _gameEvents.Add(bombEvent);
+    }
+
+    /// <summary>
+    /// Handles bomb detonation RPC.
+    /// </summary>
+    private void HandleBombDetonationRPC(uint channelIndex)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var bombEvent = new BombEvent
+        {
+            Time = currentTime,
+            EventType = "BombDetonated",
+            BombAction = "Detonated",
+            Description = "Bomb detonated"
+        };
+        
+        _gameEvents.Add(bombEvent);
+    }
+
+    /// <summary>
+    /// Handles grenade detonation RPC.
+    /// </summary>
+    private void HandleGrenadeDetonationRPC(uint channelIndex)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var grenadeEvent = new GrenadeEvent
+        {
+            Time = currentTime,
+            EventType = "GrenadeDetonation",
+            GrenadeAction = "Detonated",
+            GrenadeChannel = channelIndex,
+            Description = "Grenade detonated"
+        };
+        
+        _gameEvents.Add(grenadeEvent);
+    }
+
+    /// <summary>
+    /// Handles grenade pin removed RPC.
+    /// </summary>
+    private void HandleGrenadePinRemovedRPC(uint channelIndex)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var grenadeEvent = new GrenadeEvent
+        {
+            Time = currentTime,
+            EventType = "GrenadePinRemoved",
+            GrenadeAction = "PinRemoved",
+            GrenadeChannel = channelIndex,
+            Description = "Grenade pin removed"
+        };
+        
+        _gameEvents.Add(grenadeEvent);
+    }
+
+    /// <summary>
+    /// Handles grenade safety lever released RPC.
+    /// </summary>
+    private void HandleGrenadeLeverReleasedRPC(uint channelIndex)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        var grenadeEvent = new GrenadeEvent
+        {
+            Time = currentTime,
+            EventType = "GrenadeLeverReleased",
+            GrenadeAction = "LeverReleased",
+            GrenadeChannel = channelIndex,
+            Description = "Grenade safety lever released"
+        };
+        
+        _gameEvents.Add(grenadeEvent);
+    }
+
+    /// <summary>
+    /// Handles weapon fire RPC.
+    /// </summary>
+    private void HandleWeaponFireRPC(uint channelIndex)
+    {
+        // Note: Weapon fire events are extremely frequent and may flood the timeline
+        // Only record if we specifically want shot data - currently disabled by default
+        // Uncomment below if shot tracking is desired
+        
+        /*
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        string? ownerName = null;
+        uint? ownerChannel = null;
+        if (_weapons.TryGetValue(channelIndex, out var weapon) && weapon.OwnerRef.HasValue)
+        {
+            var resolved = ResolveGuidToChannel(weapon.OwnerRef);
+            if (resolved.HasValue && _pawns.TryGetValue(resolved.Value, out var pawn))
+            {
+                ownerChannel = resolved;
+                if (pawn.ResolvedPlayerChannel.HasValue && _players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                    ownerName = player.PlayerName;
+            }
+        }
+        
+        var fireEvent = new WeaponFireEvent
+        {
+            Time = currentTime,
+            EventType = "WeaponFire",
+            WeaponChannel = channelIndex,
+            OwnerChannel = ownerChannel,
+            OwnerName = ownerName,
+            Description = $"{ownerName ?? "Unknown"} fired weapon"
+        };
+        
+        _gameEvents.Add(fireEvent);
+        */
+    }
+
+    /// <summary>
+    /// Handles knife stab RPC.
+    /// </summary>
+    private void HandleKnifeStabRPC(uint channelIndex, MulticastOnStab export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        // Knife stab events - try to identify attacker from weapon owner
+        string? attackerName = null;
+        if (_weapons.TryGetValue(channelIndex, out var weapon) && weapon.OwnerRef.HasValue)
+        {
+            var resolved = ResolveGuidToChannel(weapon.OwnerRef);
+            if (resolved.HasValue && _pawns.TryGetValue(resolved.Value, out var pawn))
+            {
+                if (pawn.ResolvedPlayerChannel.HasValue && _players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                    attackerName = player.PlayerName;
+            }
+        }
+        
+        var knifeEvent = new KnifeEvent
+        {
+            Time = currentTime,
+            EventType = export.bDead == true ? "KnifeKill" : "KnifeStab",
+            AttackerName = attackerName,
+            Description = export.bDead == true 
+                ? $"{attackerName ?? "Unknown"} killed with knife" 
+                : $"{attackerName ?? "Unknown"} stabbed with knife"
+        };
+        
+        _gameEvents.Add(knifeEvent);
+    }
+
+    /// <summary>
+    /// Handles killed with data RPC from health component.
+    /// </summary>
+    private void HandleKilledWithDataRPC(uint channelIndex, MulticastOnKilledWithData export)
+    {
+        if (!RecordTimeline) return;
+        
+        var currentTime = GetCurrentTime();
+        
+        // Try to identify the victim from the health component owner
+        string? victimName = null;
+        if (_healthComponents.TryGetValue(channelIndex, out var health) && health.OwnerRef.HasValue)
+        {
+            var resolved = ResolveGuidToChannel(health.OwnerRef);
+            if (resolved.HasValue && _pawns.TryGetValue(resolved.Value, out var pawn))
+            {
+                if (pawn.ResolvedPlayerChannel.HasValue && _players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
+                    victimName = player.PlayerName;
+            }
+        }
+        
+        var killEvent = new KillEvent
+        {
+            Time = currentTime,
+            EventType = "Death",
+            VictimName = victimName,
+            Description = $"{victimName ?? "Unknown"} was killed",
+            Data = new Dictionary<string, object>
+            {
+                { "BoneName", export.BoneName ?? "unknown" },
+                { "Location", export.Location?.ToString() ?? "unknown" }
+            }
+        };
+        
+        _gameEvents.Add(killEvent);
     }
 
     #endregion

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,6 +95,61 @@ foreach (var replayFile in replayFiles)
                 totalSnapshots += pt.Snapshots.Count;
             }
             Console.WriteLine($"Total Position Snapshots: {totalSnapshots}");
+            
+            // Display event breakdown by type
+            if (timeline.Events.Count > 0)
+            {
+                Console.WriteLine("\n--- Event Breakdown ---");
+                var eventsByType = timeline.Events.GroupBy(e => e.EventType).OrderByDescending(g => g.Count());
+                foreach (var group in eventsByType)
+                {
+                    Console.WriteLine($"  {group.Key}: {group.Count()}");
+                }
+                
+                // Show recent kills if any
+                var kills = timeline.Events.Where(e => e.EventType == "Kill").Take(5);
+                if (kills.Any())
+                {
+                    Console.WriteLine("\n--- Recent Kills ---");
+                    foreach (var kill in kills)
+                    {
+                        if (kill is KillEvent ke)
+                        {
+                            Console.WriteLine($"  [{ke.Time:F1}s] {ke.KillerName ?? "?"} killed {ke.VictimName ?? "?"}{(ke.IsHeadshot ? " (headshot)" : "")}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"  [{kill.Time:F1}s] {kill.Description}");
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Show export type counts for debugging
+        if (replay.Stats?.ExportTypeCounts != null)
+        {
+            Console.WriteLine("\n--- Export Types Received ---");
+            var rpcTypes = replay.Stats.ExportTypeCounts
+                .Where(kvp => kvp.Key.Contains("Multicast") || kvp.Key.Contains("RPC"))
+                .OrderByDescending(kvp => kvp.Value);
+            if (rpcTypes.Any())
+            {
+                Console.WriteLine("RPC Types:");
+                foreach (var kvp in rpcTypes.Take(20))
+                {
+                    Console.WriteLine($"  {kvp.Key}: {kvp.Value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No RPC types received!");
+                Console.WriteLine("Top 10 export types:");
+                foreach (var kvp in replay.Stats.ExportTypeCounts.OrderByDescending(k => k.Value).Take(10))
+                {
+                    Console.WriteLine($"  {kvp.Key}: {kvp.Value}");
+                }
+            }
         }
         
         // Export 1: Final state summary (compact JSON)

@@ -96,7 +96,7 @@ public class MulticastOnCut : INetFieldExportGroup
 /// Contains RPC function mappings for bomb plant spot events.
 /// Path: /Game/Gameplay/SearchAndDestroy/Bomb/BombPlantSpot_Basic.BombPlantSpot_Basic_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/SearchAndDestroy/Bomb/BombPlantSpot_Basic.BombPlantSpot_Basic_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("BombPlantSpot_Basic_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class BombPlantSpotCache
 {
     /// <summary>
@@ -117,7 +117,7 @@ public class BombPlantSpotCache
 /// Contains RPC function mappings for bomb events.
 /// Path: /Game/Gameplay/SearchAndDestroy/Bomb/Bomb_Basic.Bomb_Basic_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/SearchAndDestroy/Bomb/Bomb_Basic.Bomb_Basic_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Bomb_Basic_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class BombCache
 {
     /// <summary>
@@ -162,7 +162,7 @@ public class BombCache
 /// Contains RPC function mappings for pliers events.
 /// Path: /Game/Gameplay/SearchAndDestroy/Pliers/Pliers_Basic.Pliers_Basic_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/SearchAndDestroy/Pliers/Pliers_Basic.Pliers_Basic_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Pliers_Basic_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PliersCache
 {
     /// <summary>

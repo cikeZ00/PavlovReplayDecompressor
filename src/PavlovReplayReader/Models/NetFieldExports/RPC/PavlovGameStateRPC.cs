@@ -43,10 +43,11 @@ public class MulticastOnKillfeedEntry : INetFieldExportGroup
     public uint? Victim { get; set; }
 
     /// <summary>
-    /// Reference to the damage causer (weapon) (handle 2).
+    /// Reference to the damage causer (weapon path) (handle 2).
+    /// 145-bit complex type - ignoring to allow subsequent properties to parse.
     /// </summary>
-    [NetFieldExport("DamageCauser", RepLayoutCmdType.PropertyObject)]
-    public uint? DamageCauser { get; set; }
+    [NetFieldExport("DamageCauser", RepLayoutCmdType.Ignore)]
+    public object? DamageCauser { get; set; }
 
     /// <summary>
     /// Whether the kill was a headshot (handle 3).
@@ -110,9 +111,9 @@ public class MulticastOnKillfeedEntry : INetFieldExportGroup
 /// <summary>
 /// ClassNetCache for PavlovGameState.
 /// Contains RPC function mappings for game state events.
-/// Path: /Script/Pavlov.PavlovGameState_ClassNetCache
+/// Path: PavlovGameState_ClassNetCache (short name for compatibility)
 /// </summary>
-[NetFieldExportClassNetCache("/Script/Pavlov.PavlovGameState_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("PavlovGameState_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovGameStateCache
 {
     /// <summary>

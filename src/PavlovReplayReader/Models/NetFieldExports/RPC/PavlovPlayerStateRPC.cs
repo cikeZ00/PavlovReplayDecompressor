@@ -11,7 +11,7 @@ namespace PavlovReplayReader.Models.NetFieldExports.RPC;
 /// Contains RPC function mappings for player state events.
 /// Path: /Script/Pavlov.PavlovPlayerState_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Script/Pavlov.PavlovPlayerState_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("PavlovPlayerState_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovPlayerStateCache
 {
     /// <summary>

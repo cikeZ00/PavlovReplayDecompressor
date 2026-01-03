@@ -507,3 +507,4 @@ oodle/*
 /PavlovDump
 src/ConsoleReader/not-reading-groups.txt
 *.dump
+src/temp_test.csx

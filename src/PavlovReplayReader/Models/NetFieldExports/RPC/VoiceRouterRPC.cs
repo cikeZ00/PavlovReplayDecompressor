@@ -16,28 +16,28 @@ namespace PavlovReplayReader.Models.NetFieldExports.RPC;
 public class ReplayOnVoiceBunch : INetFieldExportGroup
 {
     /// <summary>
-    /// First player reference (handle 0).
+    /// Players array - complex structure, ignore for now (handle 0).
     /// </summary>
-    [NetFieldExportHandle(0, RepLayoutCmdType.PropertyObject)]
-    public uint? Player1 { get; set; }
+    [NetFieldExportHandle(0, RepLayoutCmdType.Ignore)]
+    public object? Players0 { get; set; }
 
     /// <summary>
-    /// Second player reference (handle 1).
+    /// Players array - complex structure, ignore for now (handle 1).
     /// </summary>
-    [NetFieldExportHandle(1, RepLayoutCmdType.PropertyObject)]
-    public uint? Player2 { get; set; }
+    [NetFieldExportHandle(1, RepLayoutCmdType.Ignore)]
+    public object? Players1 { get; set; }
 
     /// <summary>
     /// First voice packet data (handle 3).
     /// </summary>
     [NetFieldExportHandle(3, RepLayoutCmdType.Ignore)]
-    public object? Packet1 { get; set; }
+    public object? Packets0 { get; set; }
 
     /// <summary>
     /// Second voice packet data (handle 4).
     /// </summary>
     [NetFieldExportHandle(4, RepLayoutCmdType.Ignore)]
-    public object? Packet2 { get; set; }
+    public object? Packets1 { get; set; }
 }
 
 #endregion
@@ -49,7 +49,7 @@ public class ReplayOnVoiceBunch : INetFieldExportGroup
 /// Contains RPC function mappings for voice communication events.
 /// Path: /Script/Pavlov.VoiceRouter_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Script/Pavlov.VoiceRouter_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("VoiceRouter_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class VoiceRouterCache
 {
     /// <summary>

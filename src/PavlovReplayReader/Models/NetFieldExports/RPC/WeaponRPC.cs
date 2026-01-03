@@ -40,7 +40,7 @@ public class MulticastFire : INetFieldExportGroup
 /// ClassNetCache for Gun_Revolver.
 /// Path: /Game/Guns/Revolver/Gun_Revolver.Gun_Revolver_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Revolver/Gun_Revolver.Gun_Revolver_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Revolver_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunRevolverCache
 {
     /// <summary>
@@ -54,7 +54,7 @@ public class GunRevolverCache
 /// ClassNetCache for Gun_Tokarev.
 /// Path: /Game/Guns/Tokarev/Gun_Tokarev.Gun_Tokarev_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Tokarev/Gun_Tokarev.Gun_Tokarev_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Tokarev_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunTokarevCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -71,7 +71,7 @@ public class GunTokarevCache
 /// ClassNetCache for Gun_1911.
 /// Path: /Game/Guns/C1911/Gun_1911.Gun_1911_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/C1911/Gun_1911.Gun_1911_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_1911_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class Gun1911Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -88,7 +88,7 @@ public class Gun1911Cache
 /// ClassNetCache for Gun_Cet9 (Tec-9).
 /// Path: /Game/Guns/Cet9/Gun_Cet9.Gun_Cet9_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Cet9/Gun_Cet9.Gun_Cet9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Cet9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunCet9Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -102,7 +102,7 @@ public class GunCet9Cache
 /// ClassNetCache for Gun_57.
 /// Path: /Game/Guns/57/Gun_57.Gun_57_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/57/Gun_57.Gun_57_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_57_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class Gun57Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -119,7 +119,7 @@ public class Gun57Cache
 /// ClassNetCache for Gun_Glock.
 /// Path: /Game/Guns/Glock/Gun_Glock.Gun_Glock_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Glock/Gun_Glock.Gun_Glock_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Glock_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunGlockCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -133,7 +133,7 @@ public class GunGlockCache
 /// ClassNetCache for Gun_DE (Desert Eagle).
 /// Path: /Game/Guns/DE/Gun_DE.Gun_DE_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/DE/Gun_DE.Gun_DE_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_DE_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunDECache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -144,7 +144,7 @@ public class GunDECache
 /// ClassNetCache for Gun_Vanas.
 /// Path: /Game/Guns/Vanas/Gun_Vanas.Gun_Vanas_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Vanas/Gun_Vanas.Gun_Vanas_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Vanas_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunVanasCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -158,7 +158,7 @@ public class GunVanasCache
 /// ClassNetCache for Gun_Pepe.
 /// Path: /Game/Guns/Pepe/Gun_Pepe.Gun_Pepe_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Pepe/Gun_Pepe.Gun_Pepe_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Pepe_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunPepeCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -176,7 +176,7 @@ public class GunPepeCache
 /// ClassNetCache for Gun_AK47.
 /// Path: /Game/Guns/AK/Gun_AK47.Gun_AK47_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AK/Gun_AK47.Gun_AK47_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_AK47_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunAK47Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -193,7 +193,7 @@ public class GunAK47Cache
 /// ClassNetCache for Gun_AK12.
 /// Path: /Game/Guns/AK/Gun_AK12.Gun_AK12_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AK/Gun_AK12.Gun_AK12_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_AK12_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunAK12Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -207,7 +207,7 @@ public class GunAK12Cache
 /// ClassNetCache for Gun_M4.
 /// Path: /Game/Guns/M4/Gun_M4.Gun_M4_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/M4/Gun_M4.Gun_M4_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_M4_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunM4Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -224,7 +224,7 @@ public class GunM4Cache
 /// ClassNetCache for Gun_M16.
 /// Path: /Game/Guns/M16/Gun_M16.Gun_M16_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/M16/Gun_M16.Gun_M16_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_M16_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunM16Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -238,7 +238,7 @@ public class GunM16Cache
 /// ClassNetCache for Gun_AUG.
 /// Path: /Game/Guns/AUG/Gun_AUG.Gun_AUG_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AUG/Gun_AUG.Gun_AUG_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_AUG_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunAUGCache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRGun:MulticastStateSanityCheck", isFunction: true)]
@@ -249,7 +249,7 @@ public class GunAUGCache
 /// ClassNetCache for Gun_AutoSniper.
 /// Path: /Game/Guns/AutoSniper/Gun_AutoSniper.Gun_AutoSniper_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AutoSniper/Gun_AutoSniper.Gun_AutoSniper_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_AutoSniper_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunAutoSniperCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -264,7 +264,7 @@ public class GunAutoSniperCache
 /// ClassNetCache for Gun_Kriss (Vector).
 /// Path: /Game/Guns/Kriss/Gun_Kriss.Gun_Kriss_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Kriss/Gun_Kriss.Gun_Kriss_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Kriss_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunKrissCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -275,7 +275,7 @@ public class GunKrissCache
 /// ClassNetCache for Gun_AR9.
 /// Path: /Game/Guns/AR9/Gun_AR9.Gun_AR9_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AR9/Gun_AR9.Gun_AR9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_AR9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunAR9Cache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -296,7 +296,7 @@ public class GunAR9Cache
 /// ClassNetCache for Gun_Sawedoff.
 /// Path: /Game/Guns/Shotgun/Sawedoff/Gun_Sawedoff.Gun_Sawedoff_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Shotgun/Sawedoff/Gun_Sawedoff.Gun_Sawedoff_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Gun_Sawedoff_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class GunSawedoffCache
 {
     [NetFieldExportRPC("MulticastFire", "/Script/VRFramework.VRGun:MulticastFire", isFunction: true)]
@@ -314,7 +314,7 @@ public class GunSawedoffCache
 /// ClassNetCache for Magazine_Tokarev.
 /// Path: /Game/Guns/Tokarev/Magazine_Tokarev.Magazine_Tokarev_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Tokarev/Magazine_Tokarev.Magazine_Tokarev_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_Tokarev_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineTokarevCache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -325,7 +325,7 @@ public class MagazineTokarevCache
 /// ClassNetCache for Magazine_1911.
 /// Path: /Game/Guns/C1911/Magazine_1911.Magazine_1911_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/C1911/Magazine_1911.Magazine_1911_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_1911_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class Magazine1911Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -336,7 +336,7 @@ public class Magazine1911Cache
 /// ClassNetCache for Magazine_Cet9.
 /// Path: /Game/Guns/Cet9/Magazine_Cet9.Magazine_Cet9_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Cet9/Magazine_Cet9.Magazine_Cet9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_Cet9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineCet9Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -347,7 +347,7 @@ public class MagazineCet9Cache
 /// ClassNetCache for Magazine_57.
 /// Path: /Game/Guns/57/Magazine_57.Magazine_57_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/57/Magazine_57.Magazine_57_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_57_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class Magazine57Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -358,7 +358,7 @@ public class Magazine57Cache
 /// ClassNetCache for Magazine_Glock.
 /// Path: /Game/Guns/Glock/Magazine_Glock.Magazine_Glock_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Glock/Magazine_Glock.Magazine_Glock_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_Glock_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineGlockCache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -369,7 +369,7 @@ public class MagazineGlockCache
 /// ClassNetCache for Magazine_DE.
 /// Path: /Game/Guns/DE/Magazine_DE.Magazine_DE_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/DE/Magazine_DE.Magazine_DE_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_DE_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineDECache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -380,7 +380,7 @@ public class MagazineDECache
 /// ClassNetCache for Magazine_AK47.
 /// Path: /Game/Guns/AK/Magazine_AK47.Magazine_AK47_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AK/Magazine_AK47.Magazine_AK47_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_AK47_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineAK47Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -391,7 +391,7 @@ public class MagazineAK47Cache
 /// ClassNetCache for Magazine_AK12.
 /// Path: /Game/Guns/AK/Magazine_AK12.Magazine_AK12_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AK/Magazine_AK12.Magazine_AK12_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_AK12_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineAK12Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -402,7 +402,7 @@ public class MagazineAK12Cache
 /// ClassNetCache for Magazine_M4.
 /// Path: /Game/Guns/M4/Magazine_M4.Magazine_M4_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/M4/Magazine_M4.Magazine_M4_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_M4_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineM4Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -413,7 +413,7 @@ public class MagazineM4Cache
 /// ClassNetCache for Magazine_AUG.
 /// Path: /Game/Guns/AUG/Magazine_AUG.Magazine_AUG_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AUG/Magazine_AUG.Magazine_AUG_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_AUG_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineAUGCache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -424,7 +424,7 @@ public class MagazineAUGCache
 /// ClassNetCache for Magazine_AR9.
 /// Path: /Game/Guns/AR9/Magazine_AR9.Magazine_AR9_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/AR9/Magazine_AR9.Magazine_AR9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_AR9_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazineAR9Cache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]
@@ -435,7 +435,7 @@ public class MagazineAR9Cache
 /// ClassNetCache for Magazine_Pepe.
 /// Path: /Game/Guns/Pepe/Magazine_Pepe.Magazine_Pepe_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Guns/Pepe/Magazine_Pepe.Magazine_Pepe_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("Magazine_Pepe_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class MagazinePepeCache
 {
     [NetFieldExportRPC("MulticastStateSanityCheck", "/Script/VRFramework.VRMagazine:MulticastStateSanityCheck", isFunction: true)]

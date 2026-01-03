@@ -181,6 +181,67 @@ public class RoundEvent : GameEvent
 }
 
 /// <summary>
+/// Damage event when a player takes damage.
+/// </summary>
+public class DamageEvent : GameEvent
+{
+    public uint? VictimChannel { get; set; }
+    public string? VictimName { get; set; }
+    public uint? InstigatorChannel { get; set; }
+    public string? InstigatorName { get; set; }
+    public string? BoneName { get; set; }
+    public FVector? Location { get; set; }
+    public FVector? Direction { get; set; }
+    public float? ImpulseForce { get; set; }
+    public float? WoundRate { get; set; }
+    public float? WoundScale { get; set; }
+    public bool IsHeadshot { get; set; }
+    public bool IsHelmetHit { get; set; }
+}
+
+/// <summary>
+/// Bomb-related event (plant, defuse, detonate, etc.).
+/// </summary>
+public class BombEvent : GameEvent
+{
+    public string? BombAction { get; set; }
+    public bool? IsPlanted { get; set; }
+    public bool? IsDefused { get; set; }
+    public bool? CodeSucceeded { get; set; }
+}
+
+/// <summary>
+/// Grenade event (pin removed, lever released, detonation).
+/// </summary>
+public class GrenadeEvent : GameEvent
+{
+    public string? GrenadeAction { get; set; }
+    public uint? GrenadeChannel { get; set; }
+    public FVector? Location { get; set; }
+}
+
+/// <summary>
+/// Weapon fire event.
+/// </summary>
+public class WeaponFireEvent : GameEvent
+{
+    public uint? WeaponChannel { get; set; }
+    public uint? OwnerChannel { get; set; }
+    public string? OwnerName { get; set; }
+}
+
+/// <summary>
+/// Knife stab event.
+/// </summary>
+public class KnifeEvent : GameEvent
+{
+    public uint? AttackerChannel { get; set; }
+    public string? AttackerName { get; set; }
+    public uint? VictimChannel { get; set; }
+    public string? VictimName { get; set; }
+}
+
+/// <summary>
 /// Complete timeline export containing all time-series data from the replay.
 /// </summary>
 public class ReplayTimeline

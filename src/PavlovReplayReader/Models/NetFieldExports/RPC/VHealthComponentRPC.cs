@@ -49,7 +49,7 @@ public class MulticastOnKilledWithData : INetFieldExportGroup
 /// Contains RPC function mappings for health component events.
 /// Path: /Script/Vankrupt.VHealthComponent_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Script/Vankrupt.VHealthComponent_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("VHealthComponent_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class VHealthComponentCache
 {
     /// <summary>

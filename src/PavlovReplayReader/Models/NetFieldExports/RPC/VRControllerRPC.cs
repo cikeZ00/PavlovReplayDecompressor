@@ -23,9 +23,10 @@ public class MulticastChangeState : INetFieldExportGroup
 
     /// <summary>
     /// Rotation of the state change (handle 1).
+    /// Complex FQuat serialization - using Ignore for now.
     /// </summary>
-    [NetFieldExport("Rotation", RepLayoutCmdType.PropertyRotator)]
-    public FRotator? Rotation { get; set; }
+    [NetFieldExport("Rotation", RepLayoutCmdType.Ignore)]
+    public object? Rotation { get; set; }
 
     /// <summary>
     /// Translation/location of the state change (handle 2).
@@ -71,7 +72,7 @@ public class MulticastStateSanityCheck : INetFieldExportGroup
 /// Contains RPC function mappings for VR controller events.
 /// Path: /Game/Gameplay/BP_PavlovController.BP_PavlovController_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/BP_PavlovController.BP_PavlovController_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("BP_PavlovController_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovControllerCache
 {
     /// <summary>
@@ -85,7 +86,7 @@ public class PavlovControllerCache
 /// ClassNetCache for BP_PavlovGhostController (spectator controller).
 /// Path: /Game/Gameplay/Misc/Spectator/BP_PavlovGhostController.BP_PavlovGhostController_C_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/Misc/Spectator/BP_PavlovGhostController.BP_PavlovGhostController_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("BP_PavlovGhostController_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovGhostControllerCache
 {
     /// <summary>
@@ -99,7 +100,7 @@ public class PavlovGhostControllerCache
 /// ClassNetCache for VRInventoryLogic.
 /// Path: /Script/VRFramework.VRInventoryLogic_ClassNetCache
 /// </summary>
-[NetFieldExportClassNetCache("/Script/VRFramework.VRInventoryLogic_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("VRInventoryLogic_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class VRInventoryLogicCache
 {
     /// <summary>

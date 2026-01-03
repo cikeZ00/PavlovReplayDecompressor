@@ -41,12 +41,14 @@ public class MulticastOnImpactDamage : INetFieldExportGroup
 
     /// <summary>
     /// Wound rate from damage (handle 4).
+    /// Type: uint8 in FImpactDamage struct.
     /// </summary>
-    [NetFieldExport("WoundRate", RepLayoutCmdType.PropertyFloat)]
-    public float? WoundRate { get; set; }
+    [NetFieldExport("WoundRate", RepLayoutCmdType.PropertyByte)]
+    public byte? WoundRate { get; set; }
 
     /// <summary>
     /// Wound scale from damage (handle 5).
+    /// Type: float in FImpactDamage struct.
     /// </summary>
     [NetFieldExport("WoundScale", RepLayoutCmdType.PropertyFloat)]
     public float? WoundScale { get; set; }
@@ -86,29 +88,33 @@ public class MulticastOnHeadshot : INetFieldExportGroup
 
     /// <summary>
     /// Wound rate from the headshot (handle 3).
+    /// Serialized as a byte (0-255).
     /// </summary>
-    [NetFieldExport("WoundRate", RepLayoutCmdType.PropertyFloat)]
-    public float? WoundRate { get; set; }
+    [NetFieldExport("WoundRate", RepLayoutCmdType.PropertyByte)]
+    public byte? WoundRate { get; set; }
 }
 
 /// <summary>
 /// RPC struct for MulticastOnHelmetHit function.
 /// Called when a player's helmet is hit.
 /// Path: /Script/Pavlov.PavlovPawn:MulticastOnHelmetHit
+/// SDK signature: void MulticastOnHelmetHit(const FVector_NetQuantize& Location, const FVector_NetQuantizeNormal& Direction)
 /// </summary>
 [NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastOnHelmetHit", minimalParseMode: ParseMode.Minimal)]
 public class MulticastOnHelmetHit : INetFieldExportGroup
 {
     /// <summary>
     /// Location of the helmet hit (handle 0).
+    /// Type: FVector_NetQuantize - uses variable-length quantized serialization.
     /// </summary>
-    [NetFieldExport("Location", RepLayoutCmdType.PropertyVector)]
+    [NetFieldExport("Location", RepLayoutCmdType.PropertyVectorQ)]
     public FVector? Location { get; set; }
 
     /// <summary>
     /// Direction of the hit (handle 1).
+    /// Type: FVector_NetQuantizeNormal - 48-bit quantized normal vector.
     /// </summary>
-    [NetFieldExport("Direction", RepLayoutCmdType.PropertyVector)]
+    [NetFieldExport("Direction", RepLayoutCmdType.PropertyVectorNormal)]
     public FVector? Direction { get; set; }
 }
 
@@ -116,15 +122,77 @@ public class MulticastOnHelmetHit : INetFieldExportGroup
 /// RPC struct for MulticastOnRadialDeath function.
 /// Called when a player dies from radial/explosion damage.
 /// Path: /Script/Pavlov.PavlovPawn:MulticastOnRadialDeath
+/// SDK signature: void MulticastOnRadialDeath(const FVector_NetQuantize& Origin)
 /// </summary>
 [NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastOnRadialDeath", minimalParseMode: ParseMode.Minimal)]
 public class MulticastOnRadialDeath : INetFieldExportGroup
 {
     /// <summary>
     /// Origin point of the radial damage (handle 0).
+    /// Type: FVector_NetQuantize - uses variable-length quantized serialization.
     /// </summary>
-    [NetFieldExport("Origin", RepLayoutCmdType.PropertyVector)]
+    [NetFieldExport("Origin", RepLayoutCmdType.PropertyVectorQ)]
     public FVector? Origin { get; set; }
+}
+
+/// <summary>
+/// RPC struct for MulticastOnHelmetBlownoff function.
+/// Called when a player's helmet is blown off.
+/// Path: /Script/Pavlov.PavlovPawn:MulticastOnHelmetBlownoff
+/// No parameters in Debug.txt dump - likely a zero-parameter event.
+/// </summary>
+[NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastOnHelmetBlownoff", minimalParseMode: ParseMode.Minimal)]
+public class MulticastOnHelmetBlownoff : INetFieldExportGroup
+{
+}
+
+/// <summary>
+/// RPC struct for MulticastOnHitSlow function.
+/// Called when a player is hit and slowed.
+/// Path: /Script/Pavlov.PavlovPawn:MulticastOnHitSlow
+/// No parameters in Debug.txt dump - likely a zero-parameter event.
+/// </summary>
+[NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastOnHitSlow", minimalParseMode: ParseMode.Minimal)]
+public class MulticastOnHitSlow : INetFieldExportGroup
+{
+}
+
+/// <summary>
+/// RPC struct for MulticastOnMagazineGrabbed function.
+/// Called when a player grabs a magazine.
+/// Path: /Script/Pavlov.PavlovPawn:MulticastOnMagazineGrabbed
+/// SDK signature: void MulticastOnMagazineGrabbed(bool bDominant)
+/// </summary>
+[NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastOnMagazineGrabbed", minimalParseMode: ParseMode.Minimal)]
+public class MulticastOnMagazineGrabbed : INetFieldExportGroup
+{
+    /// <summary>
+    /// Whether the dominant hand grabbed the magazine (handle 0).
+    /// </summary>
+    [NetFieldExport("bDominant", RepLayoutCmdType.PropertyBool)]
+    public bool? bDominant { get; set; }
+}
+
+/// <summary>
+/// RPC struct for MulticastOnWearArmour function.
+/// Called when a player puts on armour.
+/// Path: /Script/Pavlov.PavlovPawn:MulticastOnWearArmour
+/// No parameters in Debug.txt dump - likely a zero-parameter event.
+/// </summary>
+[NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastOnWearArmour", minimalParseMode: ParseMode.Minimal)]
+public class MulticastOnWearArmour : INetFieldExportGroup
+{
+}
+
+/// <summary>
+/// RPC struct for MulticastResetPawn function.
+/// Called when a player pawn is reset.
+/// Path: /Script/Pavlov.PavlovPawn:MulticastResetPawn
+/// No parameters in Debug.txt dump - likely a zero-parameter event.
+/// </summary>
+[NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastResetPawn", minimalParseMode: ParseMode.Minimal)]
+public class MulticastResetPawn : INetFieldExportGroup
+{
 }
 
 /// <summary>
@@ -167,15 +235,17 @@ public class MulticastAdjustAvatarScale : INetFieldExportGroup
 /// RPC struct for MulticastPlayerLanded function.
 /// Called when a player lands on a surface.
 /// Path: /Script/Pavlov.PavlovPawn:MulticastPlayerLanded
+/// SDK signature: void MulticastPlayerLanded(EPhysicalSurface LandedSurface)
 /// </summary>
 [NetFieldExportGroup("/Script/Pavlov.PavlovPawn:MulticastPlayerLanded", minimalParseMode: ParseMode.Minimal)]
 public class MulticastPlayerLanded : INetFieldExportGroup
 {
     /// <summary>
     /// Physical material of the surface landed on (handle 0).
+    /// Type: EPhysicalSurface enum.
     /// </summary>
-    [NetFieldExport("LandedSurface", RepLayoutCmdType.PropertyObject)]
-    public uint? LandedSurface { get; set; }
+    [NetFieldExport("LandedSurface", RepLayoutCmdType.Enum)]
+    public int? LandedSurface { get; set; }
 }
 
 /// <summary>
@@ -212,9 +282,9 @@ public class PlayInventoryGrabSoundMulti : INetFieldExportGroup
 /// <summary>
 /// ClassNetCache for BP_PavlovPawn.
 /// Contains RPC function mappings for player pawn multicast events.
-/// Path: /Game/Gameplay/BP_PavlovPawn.BP_PavlovPawn_C_ClassNetCache
+/// Path: BP_PavlovPawn_C_ClassNetCache (short name for compatibility)
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/BP_PavlovPawn.BP_PavlovPawn_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("BP_PavlovPawn_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovPawnCache
 {
     /// <summary>
@@ -233,7 +303,7 @@ public class PavlovPawnCache
     /// RPC for helmet blown off event (handle 16).
     /// </summary>
     [NetFieldExportRPC("MulticastOnHelmetBlownoff", "/Script/Pavlov.PavlovPawn:MulticastOnHelmetBlownoff", isFunction: true)]
-    public object? MulticastOnHelmetBlownoff { get; set; }
+    public MulticastOnHelmetBlownoff? MulticastOnHelmetBlownoff { get; set; }
 
     /// <summary>
     /// RPC for helmet hit event (handle 17).
@@ -245,7 +315,7 @@ public class PavlovPawnCache
     /// RPC for slow effect from hit (handle 19).
     /// </summary>
     [NetFieldExportRPC("MulticastOnHitSlow", "/Script/Pavlov.PavlovPawn:MulticastOnHitSlow", isFunction: true)]
-    public object? MulticastOnHitSlow { get; set; }
+    public MulticastOnHitSlow? MulticastOnHitSlow { get; set; }
 
     /// <summary>
     /// RPC for impact damage event (handle 20).
@@ -257,7 +327,7 @@ public class PavlovPawnCache
     /// RPC for magazine grabbed event (handle 21).
     /// </summary>
     [NetFieldExportRPC("MulticastOnMagazineGrabbed", "/Script/Pavlov.PavlovPawn:MulticastOnMagazineGrabbed", isFunction: true)]
-    public object? MulticastOnMagazineGrabbed { get; set; }
+    public MulticastOnMagazineGrabbed? MulticastOnMagazineGrabbed { get; set; }
 
     /// <summary>
     /// RPC for radial/explosion death event (handle 22).
@@ -269,7 +339,7 @@ public class PavlovPawnCache
     /// RPC for wearing armour event (handle 23).
     /// </summary>
     [NetFieldExportRPC("MulticastOnWearArmour", "/Script/Pavlov.PavlovPawn:MulticastOnWearArmour", isFunction: true)]
-    public object? MulticastOnWearArmour { get; set; }
+    public MulticastOnWearArmour? MulticastOnWearArmour { get; set; }
 
     /// <summary>
     /// RPC for player landed event (handle 25).
@@ -281,7 +351,7 @@ public class PavlovPawnCache
     /// RPC for pawn reset event (handle 26).
     /// </summary>
     [NetFieldExportRPC("MulticastResetPawn", "/Script/Pavlov.PavlovPawn:MulticastResetPawn", isFunction: true)]
-    public object? MulticastResetPawn { get; set; }
+    public MulticastResetPawn? MulticastResetPawn { get; set; }
 
     /// <summary>
     /// RPC for teleport event (handle 27).
@@ -298,9 +368,9 @@ public class PavlovPawnCache
 
 /// <summary>
 /// ClassNetCache for BP_PavlovGhost spectator pawn.
-/// Path: /Game/Gameplay/Misc/Spectator/BP_PavlovGhost.BP_PavlovGhost_C_ClassNetCache
+/// Path: BP_PavlovGhost_C_ClassNetCache (short name for compatibility)
 /// </summary>
-[NetFieldExportClassNetCache("/Game/Gameplay/Misc/Spectator/BP_PavlovGhost.BP_PavlovGhost_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
+[NetFieldExportClassNetCache("BP_PavlovGhost_C_ClassNetCache", minimalParseMode: ParseMode.Minimal)]
 public class PavlovGhostCache
 {
     // Ghost pawns inherit from PavlovPawn but may have different RPC functions
