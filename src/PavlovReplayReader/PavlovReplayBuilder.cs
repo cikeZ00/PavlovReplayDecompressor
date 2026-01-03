@@ -1430,15 +1430,16 @@ public class PavlovReplayBuilder
         
         var currentTime = GetCurrentTime();
         
-        // Try to identify the victim from the health component owner
+        // Try to identify the victim
+        // The health component RPC comes in on the owning pawn's channel (subobject RPCs use parent channel)
         string? victimName = null;
-        if (_healthComponents.TryGetValue(channelIndex, out var health) && health.OwnerRef.HasValue)
+        
+        // Direct lookup: The channelIndex IS the pawn's channel
+        if (_pawns.TryGetValue(channelIndex, out var pawn) && pawn.ResolvedPlayerChannel.HasValue)
         {
-            var resolved = ResolveGuidToChannel(health.OwnerRef);
-            if (resolved.HasValue && _pawns.TryGetValue(resolved.Value, out var pawn))
+            if (_players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
             {
-                if (pawn.ResolvedPlayerChannel.HasValue && _players.TryGetValue(pawn.ResolvedPlayerChannel.Value, out var player))
-                    victimName = player.PlayerName;
+                victimName = player.PlayerName;
             }
         }
         
